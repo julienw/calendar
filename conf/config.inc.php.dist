@@ -1,0 +1,21 @@
+<?php
+
+# config pour mysql (ou pgsql sans doute)
+# note: pgsql non fonctionnel pour l'instant (probleme pour récupérer l'id qui vient d'être inséré)
+$dsn = "mysql://user:password@hostname/database";
+
+# prefix des tables de la base de données
+$table_prefix = "cal_";
+
+# quel est l'url du site, vue de l'extérieur ?
+$site_url = "http://www.everlong.org/calendrier/";
+
+# envoi de mail
+$from_mail = "flash@everlong.org";
+$replyto_mail = "felash@gmail.com";
+
+
+# Si le serveur web est derrière un proxy
+# $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_HOST'] =
+
+?>

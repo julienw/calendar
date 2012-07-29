@@ -1,0 +1,27 @@
+(ce qui a un + est fait :)
+
++ rendre le transfert avec JSPAN asynchrone (exemples sur le site de JSpan)
+	(Note : pas encore pour l'ajout d'un nouveau concert : on a besoin du nouvel id)
++ parcours dans d'autres mois (ça devrait être facile avec Calendar et
+	Calendar_Decorator_Uri; cf la doc sur PEAR)
+- voir comment gérer les simple quotes dans le champ 'value' de l'input de modification
+- faire marcher correctement avec IE
+- d'autres vues possibles; exemple d'implémentation : faire une classe Event
+	mère qui serait très générique, et hériter les différentes vues. Ça
+	permettrait de faire plus facilement une page qui n'utiliserait pas
+	jpspan.
+- implémenter la récupération d'un mois par web service (NuSoap ou PEAR::Soap ?)
+- notion d'utilisateur (qui va voir quoi); je vois ça comme un .htaccess +
+	récupération du nom dans PHP. Ajout d'un lien sous forme d'image à côté
+	d'un concert, pour dire "moi aussi je vais voir ça".
+- gestion des horaires
+- mettre le javascript de index.php dans un fichier séparé
++ réfléchir aux indexes éventuels pour la base de données
+- réfléchir à optimiser les requêtes à la db : pour l'instant, on fait une
+requête par case, c'est assez bof...
+- rendre le code HTML valide
+- voir comment gérer les caractères accentués correctement avec mysql 4 qui
+fait de l'utf-8 tout seul. Pour l'instant, on passe la page en utf-8, mais ce
+n'est peut-être pas une bonne idée.
+- COMMENTER !! :-)
+

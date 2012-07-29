@@ -1,0 +1,94 @@
+@import url(banner.php);
+
+#title {
+	border-bottom: 1px solid black;
+	margin-bottom: 5px;
+}
+
+body, html {
+	padding: 0;
+	margin: 0;
+	font-family : Arial, sans-serif;
+	height: 100%
+}
+
+html {
+	font-size: 100%;
+}
+
+body {
+	font-size: 0.9em;
+}
+
+h1 {
+	color: #ee5;
+	margin: 0 1em 0 0;
+	font-weight: normal;
+	font-size: 2.5em;
+	padding: .25em 0 0 .5em;
+	height: 2em;
+}
+
+label {
+	display: block;
+	height: 2.5em;
+}
+
+label input,
+label select {
+	position: absolute;
+}
+
+#oubli label input {
+	left: 15em;
+}
+
+#nouveau label input {
+	left: 21em;
+}
+
+#newcal label input,
+#newcal label select {
+	left: 20em;
+}
+
+#newcal label {
+	width: 15em;
+}
+
+.messages {
+	padding: 1em 2em;
+	border: 1px solid #e88809;
+	margin: 1em 0;
+	background-color: #ffd;
+}
+
+.errors {
+	background-color: #fdd !important;
+	border-color: red;
+}
+
+.messages h2 {
+	font-size: 1.2em;
+	margin: 0 0 .5em 0;
+	padding: 0;
+	color: #e88809;
+}
+
+.errors h2 {
+	color: #c22 !important;
+}
+
+fieldset {
+	border: 1px solid blue;
+	background-color: #dadafa;
+}
+
+fieldset fieldset {
+	background-color: #d0d0f0;
+	margin: .5em 0;
+}
+
+.contents {
+	padding: .5em;
+}

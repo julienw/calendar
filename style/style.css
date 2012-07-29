@@ -1,0 +1,321 @@
+/*
+   Julien Wajsberg <felash@gmail.com>
+   2005
+
+   domaine public
+   (de toute manière, c'est pas bien formidable ;)
+ */
+
+@import "banner.php";
+
+td.empty {
+	background-color: #ffffa0;
+}
+
+td.full {
+	background-color: #c0ffa0;
+}
+
+td {
+	width: 14%;
+	text-align: center;
+	vertical-align: top;
+	padding: 0;
+}
+
+td.empty:hover {
+	background-color: #efef80;
+}
+
+td.full:hover {
+	background-color: #a0ef80;
+}
+
+td.today {
+	background-color: #d0e0ff;
+}
+
+td.today:hover {
+	background-color: #b0c0ef;
+}
+
+tr {
+	height: 15%;
+}
+
+body, html {
+	padding: 0;
+	margin: 0;
+	font-family : Arial, sans-serif;
+	height: 100%
+}
+
+html {
+	font-size: 100%;
+}
+
+body {
+	font-size: 0.7em;
+}
+
+a.link {
+    display: block;
+    width: 100%;
+	text-decoration: none;
+	color: inherit;
+}
+
+.events a:hover {
+	color: blue;
+	background-color: white;
+}
+
+table {
+    border: 1px black solid;
+}
+
+#calendrier {
+	margin-left: auto;
+	margin-right: auto;
+	width: 95%;
+	height: 80%;
+	clear: both;
+}
+
+
+dt,dd {
+	margin: 0;
+	padding: 0;
+}
+
+dl.day dt.daytitle {
+	height: 1.2em;
+	background-color: #86252e;
+	color: white;
+	text-align: center;
+}
+
+dl.day {
+	margin-top : 0;
+	margin-bottom : 0;
+	text-align: left;
+}
+
+div.event {
+	padding: 0 2px 0 5px;
+	margin: 2px 0 .7em 3px;
+}
+
+.full div.event {
+	border-left: solid #50cf50 3px;
+}
+
+.empty div.event {
+	border-left: solid #cfcf50 3px;
+}
+
+.today div.event {
+	border-left: solid #5050cf 3px;
+}
+
+.events dt.horaire {
+	float: left;
+	clear: left;
+}
+
+form.event {
+	display: none;
+	margin-left: auto;
+}
+
+input:focus,
+textarea:focus {
+	background-color: #f5f5e8;
+	border-color: #999;
+}
+
+input, textarea {
+	border: solid #bbb 1px;
+	padding-left : 2px;
+	padding-right : 2px;
+	font-size: 0.8em;
+}
+
+.event a.icon {
+	width: 16px;
+	height: 16px;
+	display: block;	
+	margin-right : 3px;
+	float: left;
+}
+
+.event a.delete {
+	background-image: url(../images/gtk-delete.png);
+	clear: left;
+}
+
+.event a.add {
+	background-image: url(../images/gtk-add.png);
+}
+
+.event a.remove {
+	background-image: url(../images/gtk-remove.png);
+}
+
+.event a.question {
+	background-image: url(../images/gtk-question.png);
+}
+
+.event .users {
+	margin-left: 4.5em;
+	line-height: 17px;
+}
+
+/* hack IE sauf IE Mac */
+/* \*/
+
+* html .event a.icon {
+	background-image: none;
+}
+
+* html .event a.delete {
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/gtk-delete.png', sizingMethod='crop');
+}
+
+* html .event a.add {
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/gtk-add.png', sizingMethod='crop');
+}
+
+* html .event a.remove {
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/gtk-remove.png', sizingMethod='crop');
+}
+
+* html .event a.question {
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/gtk-question.png', sizingMethod='crop');
+}
+/* */
+
+h1 {
+	text-align: center;
+	text-transform: capitalize;
+	color: #ee5;
+	float: right;
+	margin: .25em 1em 0 0;
+	font-weight: normal;
+	font-size: 3em;
+	padding: 0;
+}
+
+
+td {
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.monday {
+	background-image: url(../images/lundi.png);
+}
+.tuesday {
+	background-image: url(../images/mardi.png);
+}
+.wednesday {
+	background-image: url(../images/mercredi.png);
+}
+.thursday {
+	background-image: url(../images/jeudi.png);
+}
+.friday {
+	background-image: url(../images/vendredi.png);
+}
+.saturday {
+	background-image: url(../images/samedi.png);
+}
+.sunday {
+	background-image: url(../images/dimanche.png);
+}
+
+/* hack IE sauf IE Mac */
+/* \*/
+* html td {
+	background-image: none !important;
+/*	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/lundi.png', sizingMethod='crop'); trop moche */
+}
+/* */
+
+/* liens vers la connexion et le fil rss */
+#search input[type=text] {
+	padding-left: 22px;
+	background-image: url(../images/search.png);
+	background-repeat: no-repeat;
+	background-position: 0 -1px;
+}
+
+#search {
+	margin: 2px 0 ;
+}
+
+#nav ul {
+	list-style: none;
+	margin: 0;
+}
+
+#nav ul li ul li,
+#nav ul li ul {
+	display: inline;
+	background-image: none;
+	padding: 0;
+}
+
+#calendriers ul,
+#calendriers ul li {
+	padding: 0 0 0 .5em;
+}
+
+#calendriers h2 {
+	font-size: 1.1em;
+	padding: 0;
+	margin: 0;
+	font-weight: normal;	
+}
+
+#nav .liens {
+	float: left;
+	margin: 5px 0.5em;
+	padding: 2px;
+}
+
+#nav .liens {
+	background-image: url(../images/blue-trans.png);
+	border: 1px solid #8585A0;
+}
+
+#nav .liens abbr {
+	border-bottom: none;
+}
+
+#nav .separator {
+	clear: both;
+	visibility: hidden;
+	margin: 0;
+	border: none;
+	height: 1px;
+}
+
+#nav {
+	border-bottom: 1px solid black;
+	margin-bottom: 5px;
+}
+
+#navigation {
+	display: none;
+}
+
+html > body .full form.new input {
+	visibility: hidden;
+}
+
+html > body .full:hover form.new input,
+html > body .full form.new input:focus {
+	visibility: visible;
+}
+

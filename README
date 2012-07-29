@@ -1,0 +1,19 @@
+Prérequis :
+- PHP4
+- mysql
+- La base de PEAR
+- Les modules PEAR suivants :
+ + Calendar
+ + SOAP
+   - Net_DIME
+   - Net_URL
+   - HTTP_Request
+   - Net_Socket (plus récent que celui du paquet debian)
+   - Mail_Mime
+ 
+
+Note :
+une ptite modif a été faite à JPspan afin de permettre la modification de
+$_SERVER['HTTP_HOST'] pour ceux qui, comme moi, ont leur serveur derrière
+un proxy.
+
