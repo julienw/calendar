@@ -194,7 +194,6 @@ var daysInMonth = <?php echo date('t', $Month->getTimestamp()) ?>;
 }
 ?>
 </head>
-</body>
 <div id='nav' class='banner'>
 <?php /* navigation temporelle */ ?>
 <ul id='temporel' class='liens'>
