@@ -48,8 +48,8 @@ function checkUsernameAndEmail($username, $email) {
 function checkUsernameAndPassword($username, $password) {
 	global $db, $table_prefix;
 
-	$count = $db->getOne("SELECT count(id) FROM " . $table_prefix . "users WHERE username = ? AND passwd = SHA1(?)",
-			array($username, $password));
+	$count = $db->getOne("SELECT count(id) FROM " . $table_prefix . "users WHERE username = ? AND passwd = ?",
+			array($username, sha1($password)));
 
 	if (PEAR::isError($count)) {
 		die($count->getMessage());
@@ -61,8 +61,8 @@ function checkUsernameAndPassword($username, $password) {
 function changePassword($username, $password) {
 	global $db, $table_prefix;
 
-	$result = $db->query("UPDATE " . $table_prefix . "users SET passwd = SHA1(?) WHERE username = ?",
-			array($password, $username));
+	$result = $db->query("UPDATE " . $table_prefix . "users SET passwd = ? WHERE username = ?",
+			array(sha1($password), $username));
 
 	if (PEAR::isError($result)) {
 		die($result->getMessage());
@@ -266,9 +266,9 @@ confirmation.</p>
 
 		// Modification de la base
 		$result = $db->query(
-				"UPDATE " . $table_prefix . "users SET passwd = SHA1(?), confirmcookie = NULL
+				"UPDATE " . $table_prefix . "users SET passwd = ?, confirmcookie = NULL
 				WHERE username = ?",
-				array($password, $username));
+				array(sha1($password), $username));
 
 		if (PEAR::isError($result)) {
 			die($result->getMessage());
