@@ -64,7 +64,7 @@ class Event extends Calendar_Decorator {
 			$class .= " today";
 		}
 
-		$str .= "  <td class='$class'";
+		$str = "  <td class='$class'";
 		if (!$this->isEmpty()) {
 			$str .= " id='td$Day'";
 		}
