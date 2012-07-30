@@ -52,7 +52,7 @@ function submitOneForm(id) {
 	}
 
 	// sinon on modifie
-	h.modifydata(data, id);
+	h.modifyData(data, id);
 
 	// et on change le texte dans le lien
 	changeEvent(id, data);
@@ -66,7 +66,7 @@ function doDeleteData(id) {
 		return;
 	}
 	/* suppression dans la base */
-	h.deletedata(id);
+	h.deleteData(id);
 
 	/* recuperation de la ligne d'evenement dans la page */
 	var line = document.getElementById('lineofevent' + id);
@@ -95,7 +95,7 @@ function submitNewEvent(day) {
 		/* ecriture dans la base */
 		/* synchrone pour l'instant */
 		h.Sync();
-		var id = h.writedata(data, year, month, day);
+		var id = h.writeData(data, year, month, day);
 		h.Async(handler);
 <?php
 $event_writer =& Event_Writer::getInstance();
@@ -118,7 +118,7 @@ function doAddUser(id) {
 	var users = elt.firstChild;
 	var value = users.nodeValue;
 
-	h.adduser(id);
+	h.addUser(id);
 
 	if (value == '[]') {
 		value = '[' + currentuser + ']';
@@ -134,7 +134,7 @@ function doRemoveUser(id) {
 	var users = elt.firstChild;
 	var value = users.nodeValue;
 
-	h.removeuser(id);
+	h.removeUser(id);
 
 	var myRegexp = new RegExp('(, )?' + currentuser + '(, )?', 'i');
 	value = value.replace(myRegexp, '');
@@ -185,25 +185,25 @@ function dontPropagate(e) {
 /* il ne fait rien, il ne sert qu'a recuperer les reponses */
 function CalendrierCallBack() {}
 CalendrierCallBack.prototype = {
-	deletedata : function(response) {
+	deleteData : function(response) {
 				 },
 				 
-	modifydata : function(response) {
+	modifyData : function(response) {
 				 },
 
-	writedata : function(response) {
+	writeData : function(response) {
 				},
 				
-	adduser : function (response) {
+	addUser : function (response) {
 			  },
 
-	removeuser : function (response) {
+	removeUser : function (response) {
 			  }
 }
 
 /* instanciation des routines du calendrier */
 var handler = new CalendrierCallBack();
-var h = new calendrier_xmlrpc(handler);
+var h = new Calendrier_xmlrpc(handler);
 window.onload = pageLoaded;
 
 
