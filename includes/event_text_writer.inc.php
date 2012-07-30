@@ -41,6 +41,7 @@ class Event_Text_Writer extends Node_Writer {
 		$trash->setAttribute('onclick', 'doDeleteData(__ID__); return false');
 		$trash->setAttribute('class', 'icon delete');
 		$trash->setAttribute('title', 'Effacer cet &eacute;v&eacute;nement');
+		$trash->setContent(' ');
 		$cell1->addChild($trash);
 
 		$addremove =& new XML_Tree_Node('a');
@@ -49,12 +50,14 @@ class Event_Text_Writer extends Node_Writer {
 		$addremove->setAttribute('class', 'icon __MYCLASS__');
 		$addremove->setAttribute('id', 'addremoveicon__ID__');
 		$addremove->setAttribute('title', 'S\'ajouter ou s\'enlever de cet &eacute;v&eacute;nement');
+		$addremove->setContent(' ');
 		$cell1->addChild($addremove);
 
 		$notsure =& new XML_Tree_Node('a');
 		$notsure->setAttribute('href', 'javascript: toggleNotSure(__ID__)');
 		$notsure->setAttribute('class', 'icon question');
 		$notsure->setAttribute('title', 'Je viens ou je ne viens pas ?');
+		$notsure->setContent(' ');
 //		$cell1->addChild($notsure);
 		
 		$users =& new XML_Tree_Node('div', '[__USERS__]');
@@ -70,7 +73,6 @@ class Event_Text_Writer extends Node_Writer {
 		$newnodelink->setAttribute('href', 'javascript: showInput(__ID__)');
 		$newnodelink->setAttribute('class', 'link summary');
 		$newnodelink->setAttribute('id', 'evttitle__ID__');
-
 		$cell2->addChild($newnodelink);
 
 		/* div non semantique; c'est lui qu'on va supprimer a la deletion d'un event */
