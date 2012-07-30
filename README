@@ -1,3 +1,10 @@
+This is a very old project with PHP4-ism (but it works in PHP5), use
+old unmaintained PEAR modules, and use old tricks.
+
+Please don't use this. Or don't blame me.
+
+The following is in french and is wrong :
+
 Prérequis :
 - PHP4
 - mysql
