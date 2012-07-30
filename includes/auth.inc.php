@@ -67,6 +67,15 @@ class Auth {
 
 	function getCredentials() {
 		$this->log->debug("getCredentials()");
+
+		// seen on http://www.php.net/manual/en/features.http-auth.php
+		//set http auth headers for apache+php-cgi work around
+		if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) && preg_match('/Basic\s+(.*)$/i', $_SERVER['REDIRECT_HTTP_AUTHORIZATION'], $matches)) {
+			list($name, $password) = explode(':', base64_decode($matches[1]));
+			$_SERVER['PHP_AUTH_USER'] = strip_tags($name);
+			$_SERVER['PHP_AUTH_PW'] = strip_tags($password);
+		}
+
 		if (isset($_SERVER['PHP_AUTH_USER'])) {
 			$this->user = $_SERVER['PHP_AUTH_USER'];
 			$this->password = $_SERVER['PHP_AUTH_PW'];
