@@ -5,7 +5,6 @@ require_once 'includes/auth.inc.php';
 require_once 'DB.php';
 
 $db =& DB::connect($dsn);
-
 if (PEAR::isError($db)) {
 	die($db->getMessage());
 }
