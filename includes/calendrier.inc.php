@@ -551,12 +551,11 @@ class Calendrier {
 	}
 
 	function getDateForKey($keys) {
-		$keys = mysql_escape_string($keys);
 		$keys = str_replace(array('%', '_'), array('\%', '\_'), $keys);
 		$keys = explode(" ", $keys);
-		$where_clause = "1";
+		$where_clause = "TRUE";
 		foreach ($keys as $key) {
-			$where_clause .= " AND event LIKE '%$key%'";
+			$where_clause .= " AND event LIKE " . pg_escape_literal("%$key%");
 		}
 		
 		$statement = sprintf($this->statement_search, $where_clause);
