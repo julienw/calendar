@@ -179,7 +179,7 @@ class Event extends Calendar_Decorator {
 		$year = parent::thisYear();
 		$month = parent::thisMonth();
 		
-		$str .= "<form action='actions.php' id='formnew$day' class='new'>\n";
+		$str = "<form action='actions.php' id='formnew$day' class='new'>\n";
 		$str .= "<input type='text' name='inputnew$day' id='inputnew$day' value='" .
 			$this->calendrier->getNewEventLabel() . "' />\n";
 		$str .= "<input type='hidden' name='action' value='writeData' />\n";

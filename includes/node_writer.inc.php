@@ -93,7 +93,8 @@ class Node_Writer {
 		return $value;
 	}
 
-	function get_as_html($id, $horaire, $data, $users, $class, $action, $date) {
+  function get_as_html($id, $horaire, $data, $users, $class, $action, $date) {
+    $str = '';
 		foreach ($this->nodes as $node) {
 			$xml = $node->get();
 			$xml = str_replace(
