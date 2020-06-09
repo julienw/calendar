@@ -103,7 +103,7 @@ $auth =& new Auth($db);
 <html>
 <head>
 <title>Changement de mot de passe</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel='stylesheet' type='text/css' href='style/motdepasse.css'/>
 </head>
 <body>
@@ -111,7 +111,7 @@ $auth =& new Auth($db);
 <div class='contents'>
 <?php
 if ($auth->check()) {
-	// on est loggé
+	// on est loggÃ©
 	$show_form = true;
 	$username = $auth->getUsername();
 
@@ -128,8 +128,8 @@ if ($auth->check()) {
 
 			changePassword($username, $newpassword);
 
-			echo "<p>Votre mot de passe a bien été changé.</p>\n";
-			echo "<p>Il faut <a href='login.php'>vous connecter à nouveau</a>.</p>\n";
+			echo "<p>Votre mot de passe a bien Ã©tÃ© changÃ©.</p>\n";
+			echo "<p>Il faut <a href='login.php'>vous connecter Ã  nouveau</a>.</p>\n";
 			$show_form = false;
 		}
 	}
@@ -143,7 +143,7 @@ if ($auth->check()) {
 <fieldset>
 <legend>Changement de mot de passe</legend>
 <p>Bonjour $username&nbsp;! Entrez votre ancien mot de passe ainsi que votre nouveau mot de passe, et nous ferons le changement dans notre base de
-données.</p>
+donnÃ©es.</p>
 <label>Ancien mot de passe
 <input name='oldpassword' id='oldpassword' type='password'/>
 </label>
@@ -159,7 +159,7 @@ données.</p>
 HTML;
 	}
 } else {
-	// on n'est pas loggé
+	// on n'est pas loggÃ©
 	$show_form = true;
 	$confirm = false;
 	$confirmok = false;
@@ -174,7 +174,7 @@ HTML;
 		}
 
 		if (empty($result)) {
-			$error = "Désolé, le code de confirmation n'a pas été trouvé dans la base.";
+			$error = "DÃ©solÃ©, le code de confirmation n'a pas Ã©tÃ© trouvÃ© dans la base.";
 		} else {
 			$username = $result['username'];
 			$email = $result['email'];
@@ -191,7 +191,7 @@ HTML;
 			$show_form = false;
 		} else {
 			$error = "Le nom d'utilisateur (" . htmlspecialchars($_POST['username'], ENT_QUOTES) .") et
-				l'adresse de courrier électronique (" . htmlspecialchars($_POST['email'], ENT_QUOTES) . ") ne
+				l'adresse de courrier Ã©lectronique (" . htmlspecialchars($_POST['email'], ENT_QUOTES) . ") ne
 				correspondent pas.";
 		}
 	} elseif (isset($_POST['username']) && ! empty($_POST['username'])) {
@@ -202,7 +202,7 @@ HTML;
 			$show_form = false;
 		} else {
 			$error = "Le nom d'utilisateur (" . htmlspecialchars($_POST['username'], ENT_QUOTES) . ")
-				n'a pas été trouvé dans la base de données.";
+				n'a pas Ã©tÃ© trouvÃ© dans la base de donnÃ©es.";
 		}
 	} elseif (isset($_POST['email']) && ! empty($_POST['email'])) {
 		$thisusername = checkEmail($_POST['email']);
@@ -210,8 +210,8 @@ HTML;
 			$username = $thisusername;
 			$email = $_POST['email'];
 		} else {
-			$error = "L'adresse de courrier électronique (" . htmlspecialchars($_POST['email'], ENT_QUOTES) . ")
-				n'a pas été trouvée dans la base de données.";
+			$error = "L'adresse de courrier Ã©lectronique (" . htmlspecialchars($_POST['email'], ENT_QUOTES) . ")
+				n'a pas Ã©tÃ© trouvÃ©e dans la base de donnÃ©es.";
 		}
 	}
 
@@ -223,13 +223,13 @@ HTML;
 <form action='motdepasse.php' method='post' id='oubli'>
 <fieldset>
 <legend>Changement de mot de passe</legend>
-<p>Entrez votre nom d'utilisateur ou votre adresse de courrier électronique dans les cases ci-dessous&nbsp;; nous
-essaierons de trouver une correspondance dans notre base de données, et vous enverrons ensuite un mail de
+<p>Entrez votre nom d'utilisateur ou votre adresse de courrier Ã©lectronique dans les cases ci-dessous&nbsp;; nous
+essaierons de trouver une correspondance dans notre base de donnÃ©es, et vous enverrons ensuite un mail de
 confirmation.</p>
 <label>Nom d'utilisateur
 <input name='username' id='username' type='text' value='<?php echo htmlspecialchars($_POST['username'], ENT_QUOTES)?>' />
 </label>
-<label>Courrier électronique
+<label>Courrier Ã©lectronique
 <input name='email' id='email' type='text' value='<?php echo htmlspecialchars($_POST['email'], ENT_QUOTES)?>'/>
 </label>
 <input type='submit'/>
@@ -253,15 +253,15 @@ confirmation.</p>
 					'Reply-to' => $replyto_mail,
 					'Subject' => "Mail de confirmation pour changement de mot de passe pour l'application de calendrier",
 					),
-				"Bonjour :-)\n\nL'application de calendrier a reçu une demande de changement de mot de passe pour l'utilisateur $username.\nSi vous n'avez rien demandé, vous pouvez juste ignorer ce mail. Autrement, merci de cliquer sur l'adresse de confirmation suivante:\n$site_url/motdepasse.php?confirm=$confirmcookie\n\nL'administrateur"
+				"Bonjour :-)\n\nL'application de calendrier a reÃ§u une demande de changement de mot de passe pour l'utilisateur $username.\nSi vous n'avez rien demandÃ©, vous pouvez juste ignorer ce mail. Autrement, merci de cliquer sur l'adresse de confirmation suivante:\n$site_url/motdepasse.php?confirm=$confirmcookie\n\nL'administrateur"
 			);
-		echo '<p>Un mail de confirmation vous a été envoyé à votre adresse de courrier
-			électronique&nbsp;: ' . htmlspecialchars($email) . '.</p>';
+		echo '<p>Un mail de confirmation vous a Ã©tÃ© envoyÃ© Ã  votre adresse de courrier
+			Ã©lectronique&nbsp;: ' . htmlspecialchars($email) . '.</p>';
 
 	}
 
 	if ($confirmok) {
-		// génération de password
+		// gÃ©nÃ©ration de password
 		$password = Text_Password::create();
 
 		// Modification de la base
@@ -282,10 +282,10 @@ confirmation.</p>
 					'Reply-to' => $replyto_mail,
 					'Subject' => "Nouveau mot de passe pour l'application de calendrier",
 					),
-				"Bonjour :-)\n\nUn nouveau mot de passe a été généré pour l'application de calendrier, pour l'utilisateur $username.\nCe nouveau mot de passe est : $password\n\nVous pouvez le changer sur l'interface du calendrier.\n\nJe vous rappelle que le calendrier est disponible à l'adresse suivante : $site_url\n\nL'administrateur"
+				"Bonjour :-)\n\nUn nouveau mot de passe a Ã©tÃ© gÃ©nÃ©rÃ© pour l'application de calendrier, pour l'utilisateur $username.\nCe nouveau mot de passe est : $password\n\nVous pouvez le changer sur l'interface du calendrier.\n\nJe vous rappelle que le calendrier est disponible Ã  l'adresse suivante : $site_url\n\nL'administrateur"
 			);
-		echo '<p>Un nouveau mot de passe a été généré et vous a été envoyé à votre adresse de courrier
-			électronique&nbsp;: ' . htmlspecialchars($email) . '.</p>';
+		echo '<p>Un nouveau mot de passe a Ã©tÃ© gÃ©nÃ©rÃ© et vous a Ã©tÃ© envoyÃ© Ã  votre adresse de courrier
+			Ã©lectronique&nbsp;: ' . htmlspecialchars($email) . '.</p>';
 	}
 }
 ?>
