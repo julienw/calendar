@@ -166,6 +166,7 @@ header('Content-Type: text/html; charset=utf-8');
 <title><?php echo $calendrier->getName() ?></title>
 <?php /* unicode à cause de mysql 4 */ ?>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="initial-scale=1"/>
 <?php
 foreach ($rss as $title => $url) {
 	echo "<link rel='alternate' type='application/rss+xml' title='RSS $title' href='$url' />\n";
