@@ -157,13 +157,17 @@ function togglePresenceUser(id) {
 }
 
 function attachEventsToFormNew() {
-	for (var i = 1; i <= daysInMonth; i++) {
+  for (let i = 1; i <= daysInMonth; i++) {
+    let valueAtFocus = null;
 		var elt = document.getElementById('formnew' + i);
-		elt.daynumber = i;
-		elt.onsubmit = function() { submitNewEvent(this.daynumber); return false }
+		elt.onsubmit = function() { submitNewEvent(i); return false }
 
 		elt = document.getElementById('inputnew' + i);
-		elt.onfocus = elt.select;
+		elt.onfocus = function() { this.select(); valueAtFocus = this.value;};
+    elt.onblur = function() {
+      if (this.value !== valueAtFocus) { submitNewEvent(i); }
+      valueAtFocus = null;
+    }
 
 		var elt2 = document.getElementById('td' + i);
 		elt2.onclick = function() { document.getElementById('inputnew' + this.day).focus() }
