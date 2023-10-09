@@ -42,6 +42,7 @@ class Auth {
 	
 	function check() {
 		$this->log->debug("check()");
+    session_start();
 		if (isset($this->result)) {
 			$this->log->debug("/check() -> we already have {$this->result}");
 			return $this->result;
@@ -51,9 +52,14 @@ class Auth {
 
 		if ($this->type == 'PHP') {
 			$this->result = $this->authenticate();
-		} else if ($this->type == 'EXTERN') {
-			$this->fetchId();
-			$this->result = true;
+    } else if ($this->type == "FORM") {
+      $this->result = $this->authenticate();
+      if ($this->result) {
+        session_regenerate_id();
+        $_SESSION["user"] = $this->user;
+      }
+		} else if ($this->type == 'EXTERN' or $this->type == 'SESSION') {
+			$this->result = $this->fetchId();
 		} else {
 			$this->result = false;
 			/* user guest */
@@ -67,6 +73,7 @@ class Auth {
 
 	function getCredentials() {
 		$this->log->debug("getCredentials()");
+    session_start();
 
 		// seen on http://www.php.net/manual/en/features.http-auth.php
 		//set http auth headers for apache+php-cgi work around
@@ -82,7 +89,14 @@ class Auth {
 			$this->type = 'PHP';
 		} elseif (isset($_SERVER['REMOTE_USER'])) {
 			$this->user = $_SERVER['REMOTE_USER'];
-			$this->type = 'EXTERN';
+      $this->type = 'EXTERN';
+    } elseif (isset($_POST['loginuser'])) {
+      $this->user = $_POST['loginuser'];
+      $this->password = $_POST['loginpassword'];
+      $this->type = "FORM";
+    } elseif (isset($_SESSION['user'])) {
+      $this->user = $_SESSION['user'];
+      $this->type = "SESSION";
 		} else {
 			$this->type = 'NONE';
 		}
@@ -111,7 +125,12 @@ class Auth {
 		$this->log->debug("fetchId() <- user={$this->user}");
 		$query = 'SELECT id FROM ' . $this->table . ' WHERE username=? LIMIT 1';
 		$this->id = $this->db->getOne($query, array($this->user));
+    if (empty($id)) {
+      $this->log->debug("/fetchId() -> id hasn't been found");
+      return false;
+    }
 		$this->log->debug("/fetchId() -> got id={$this->id}");
+    return true;
 	}
 	
 	function sendAuthRequest() {
