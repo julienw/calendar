@@ -10,7 +10,7 @@ if (PEAR::isError($db)) {
 }
 
 $querystring = str_replace('logout&', '', $_SERVER['QUERY_STRING']);
-$location = $site_url . $_SERVER['PATH_INFO'] . '?' . $querystring;
+$location = $site_url . '?' . $querystring;
 
 $auth =& new Auth($db);
 if ((! $auth->check()) or (isset($_GET['logout']))) {

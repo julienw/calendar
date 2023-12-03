@@ -142,8 +142,8 @@ if (isset($_GET['debug'])) {
 	echo "<!-- thisYear = $thisYear ; thisMonth = $thisMonth ; thisDay = $thisDay -->\n";
 }
 
-$login_page = "login.php" . $_SERVER['PATH_INFO'] . '?' . $_SERVER['QUERY_STRING'];
-$logout_page = "login.php" . $_SERVER['PATH_INFO'] . '?logout&amp;' . $_SERVER['QUERY_STRING'];
+$login_page = "login.php?" . $_SERVER['QUERY_STRING'];
+$logout_page = "login.php?logout&amp;" . $_SERVER['QUERY_STRING'];
 
 /* instanciation du mois correspondant, et création des jours */
 $Month = new Calendar_Month_Weekdays($year, $month);
