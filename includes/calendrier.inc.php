@@ -178,9 +178,11 @@ class Calendrier {
 			"(?, ?, ?, ?, ?)";
 		*/
 		/* pgsql */
-		pg_prepare("statement_write", "INSERT INTO " . $table_prefix . "events (event, jour, horaire, id_submitter, id_cal) VALUES ".
+		/* pg_prepare("statement_write", "INSERT INTO " . $table_prefix . "events (event, jour, horaire, id_submitter, id_cal) VALUES ".
 			"($1, $2, $3, $4, $5) RETURNING id");
-
+     */
+    $this->statement_write = "INSERT INTO " . $table_prefix . "events (event, jour, horaire, id_submitter, id_cal) VALUES ".
+			"($1, $2, $3, $4, $5) RETURNING id";
 		$this->statement_write_user = "INSERT INTO " . $table_prefix . "events_users (id_event, id_user) VALUES (?, ?)";
 		$this->statement_read =
 			"SELECT id, event, horaire, jour
@@ -435,8 +437,9 @@ class Calendrier {
 		// FIXME à modifier plus tard
 		$event_id = mysql_insert_id($this->db->connection);
 		*/
-		/* pgsql */
-		$result = pg_execute("statement_write", array($data, "$year-$month-$day", null, $user_id, $this->cal_nb));
+    /* pgsql TODO: vérifier comment utiliser pear::DB pour récupérerer l'ID, ça
+      * devrait être possible */ 
+		$result = pg_query_params($this->statement_write, array($data, "$year-$month-$day", null, $user_id, $this->cal_nb));
 		if (! $result) {
 			die ("DB Error");
 		}
