@@ -42,7 +42,6 @@ class Auth {
 	
 	function check() {
 		$this->log->debug("check()");
-    session_start();
 		if (isset($this->result)) {
 			$this->log->debug("/check() -> we already have {$this->result}");
 			return $this->result;
@@ -73,7 +72,6 @@ class Auth {
 
 	function getCredentials() {
 		$this->log->debug("getCredentials()");
-    session_start();
 
 		// seen on http://www.php.net/manual/en/features.http-auth.php
 		//set http auth headers for apache+php-cgi work around

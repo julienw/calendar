@@ -22,6 +22,7 @@
    Julien Wajsberg <felash@gmail.com>
    26 avril 2005
  */
+session_start();
 
 require_once 'Calendar/Month/Weekdays.php';
 require_once 'Calendar/Util/Uri.php';
