@@ -27,13 +27,16 @@ require_once 'Log.php';
 
 class MyLog {
 	var $log;
-	var $loglevel = PEAR_LOG_INFO;
+	var $loglevel = PEAR_LOG_DEBUG;
 
 	function MyLog (&$db, $ident) {
 		global $table_prefix;
 
-		
-		$this->log =& Log::singleton('sql', $table_prefix . 'log', getmypid() . ' ' . $ident, array('db' => $db), $this->loglevel);
+    $conf = array(
+      'db' => $db,
+      'sequence' => $table_prefix . 'log_id'
+    );
+		$this->log =& Log::singleton('sql', $table_prefix . 'log', getmypid() . ' ' . $ident, $conf, $this->loglevel);
 	}
 
 	function debug($str) {
