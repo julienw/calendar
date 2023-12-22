@@ -36,7 +36,7 @@ class MyLog {
       'db' => $db,
       'sequence' => $table_prefix . 'log_id'
     );
-		$this->log =& Log::singleton('sql', $table_prefix . 'log', getmypid() . ' ' . $ident, $conf, $this->loglevel);
+		$this->log = Log::singleton('sql', $table_prefix . 'log', getmypid() . ' ' . $ident, $conf, $this->loglevel);
 	}
 
 	function debug($str) {

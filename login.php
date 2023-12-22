@@ -4,7 +4,7 @@ require_once 'conf/config.inc.php';
 require_once 'includes/auth.inc.php';
 require_once 'DB.php';
 
-$db =& DB::connect($dsn);
+$db = DB::connect($dsn);
 if (PEAR::isError($db)) {
 	die($db->getMessage());
 }
@@ -12,7 +12,7 @@ if (PEAR::isError($db)) {
 $querystring = str_replace('logout&', '', $_SERVER['QUERY_STRING']);
 $location = $site_url . '?' . $querystring;
 
-$auth =& new Auth($db);
+$auth = new Auth($db);
 if ((! $auth->check()) or (isset($_GET['logout']))) {
 	$auth->sendAuthRequest();
 	echo "<html><head><meta http-equiv='refresh' content='0;URL=$location' /></head></html>\n";

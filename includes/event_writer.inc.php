@@ -37,9 +37,9 @@ class Event_Writer {
 	var $instance;
 
 	function Event_Writer() {
-		$this->text =& new Event_Text_Writer();
-		$this->form =& new Event_Form_Writer();
-		$this->empty =& new Event_TextEmpty_Writer();
+		$this->text = new Event_Text_Writer();
+		$this->form = new Event_Form_Writer();
+		$this->empty = new Event_TextEmpty_Writer();
 	}
 
 	function &getInstance() {

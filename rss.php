@@ -60,7 +60,7 @@ function createMissingFieds(&$value, $key) {
 }
 
 /* connexion à la db */
-$db =& DB::connect($dsn);
+$db = DB::connect($dsn);
 if (PEAR::isError($db)) {
 	die($db->getMessage());
 }
@@ -75,8 +75,8 @@ if (isset($_GET['cal'])) {
 	$calendrier = new Calendrier($db);
 }
 
-$auth =& new Auth($db);
-$cal_auth =& new CalendarAuth($calendrier, $auth);
+$auth = new Auth($db);
+$cal_auth = new CalendarAuth($calendrier, $auth);
 if (! $cal_auth->checkRead()) exit;
 
 if (isset($_GET['next'])) {

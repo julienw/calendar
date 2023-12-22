@@ -37,7 +37,7 @@ class Auth {
 		$this->db =& $db;
 		$this->table = $table_prefix . "users";
 
-		$this->log =& new MyLog($db, 'auth');
+		$this->log = new MyLog($db, 'auth');
 	}
 	
 	function check() {
@@ -105,7 +105,7 @@ class Auth {
 	function authenticate() {
 		$this->log->debug("authenticate()");
 		$query = 'SELECT id FROM ' . $this->table . ' WHERE username=? AND passwd=? LIMIT 1';
-		$id =& $this->db->getOne($query, array($this->user, sha1($this->password)));
+		$id = $this->db->getOne($query, array($this->user, sha1($this->password)));
 		if (PEAR::isError($id)) {
 			die($id->getMessage());
 		}

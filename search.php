@@ -29,7 +29,7 @@ require_once 'includes/auth.inc.php';
 require_once 'includes/calendar_auth.inc.php';
 
 /* connexion à la db */
-$db =& DB::connect($dsn);
+$db = DB::connect($dsn);
 if (PEAR::isError($db)) {
 	die($db->getMessage());
 }
@@ -46,8 +46,8 @@ if (isset($_GET['cal'])) {
 }
 
 /* authentification */
-$auth =& new Auth($db);
-$cal_auth =& new CalendarAuth($calendrier, $auth);
+$auth = new Auth($db);
+$cal_auth = new CalendarAuth($calendrier, $auth);
 
 if ($cal_auth->checkRead()) {
 

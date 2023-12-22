@@ -91,12 +91,12 @@ function checkEmail($email) {
 	return $username;
 }
 
-$db =& DB::connect($dsn);
+$db = DB::connect($dsn);
 if (PEAR::isError($db)) {
 	die($db->getMessage());
 }
 
-$auth =& new Auth($db);
+$auth = new Auth($db);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -246,7 +246,7 @@ confirmation.</p>
 		}
 
 		// envoi de mail
-		$mail =& Mail::factory('mail');
+		$mail = Mail::factory('mail');
 		$mail->send($email,
 				array(
 					'From' => $from_mail,
@@ -275,7 +275,7 @@ confirmation.</p>
 		}
 
 		// envoi de mail
-		$mail =& Mail::factory('mail');
+		$mail = Mail::factory('mail');
 		$mail->send($email,
 				array(
 					'From' => $from_mail,

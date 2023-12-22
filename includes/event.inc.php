@@ -43,7 +43,7 @@ class Event extends Calendar_Decorator {
 	function Event (& $Calendar, & $Calendrier, $authenticated = false) {
 		parent::Calendar_Decorator($Calendar);
 		$this->calendrier =& $Calendrier;
-		$this->event_writer =& Event_Writer::getInstance();
+		$this->event_writer = Event_Writer::getInstance();
 		$this->authenticated = $authenticated;
 	}
 
@@ -120,7 +120,7 @@ class Event extends Calendar_Decorator {
 		$Day = parent::thisDay();
 		$Month = parent::thisMonth();
 		$Year = parent::thisYear();
-		$this->events =& $this->calendrier->readData($Year, $Month, $Day);
+		$this->events = $this->calendrier->readData($Year, $Month, $Day);
 		reset($this->events);
 	}
 	

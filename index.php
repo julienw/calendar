@@ -41,16 +41,16 @@ require_once 'conf/config.inc.php';
 setlocale(LC_TIME, 'fr_FR');
 
 /* connexion à la db */
-$db =& DB::connect($dsn);
+$db = DB::connect($dsn);
 if (PEAR::isError($db)) {
 	die($db->getMessage());
 }
 
-$log =& new MyLog($db, 'index');
+$log = new MyLog($db, 'index');
 $log->debug("Entrée dans index");
 
 /* vérification de l'authentification */
-$auth =& new Auth($db);
+$auth = new Auth($db);
 
 /* instanciation des routines d'accès au calendrier */
 $cal = 0;
@@ -66,7 +66,7 @@ if (! $calendrier->isActive()) {
 }
 
 /* authentification du calendrier */
-$cal_auth =& new CalendarAuth($calendrier, $auth);
+$cal_auth = new CalendarAuth($calendrier, $auth);
 
 /* liens rss */
 $rss_titles = $calendrier->getRssTitles();
@@ -150,7 +150,7 @@ $Month = new Calendar_Month_Weekdays($year, $month);
 $Month->build();
 
 /* classe utilitaire de génération des liens */
-$Uri =& new Calendar_Util_Uri('year', 'month');
+$Uri = new Calendar_Util_Uri('year', 'month');
 $Uri->separator = '/';
 $Uri->scalar = true;
 

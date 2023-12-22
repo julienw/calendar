@@ -73,7 +73,7 @@ function extractData($id) {
 	return $_GET['input' . $id];
 }
 
-$db =& DB::connect($dsn);
+$db = DB::connect($dsn);
 if (PEAR::isError($db)) {
 	die($db->getMessage());
 }
@@ -90,8 +90,8 @@ if (! $calendrier->isActive()) {
 }
 
 // authentification
-$auth =& new Auth($db);
-$cal_auth =& new CalendarAuth($calendrier, $auth);
+$auth = new Auth($db);
+$cal_auth = new CalendarAuth($calendrier, $auth);
 if (!$cal_auth->checkWrite()) {
 	redirect();
 }

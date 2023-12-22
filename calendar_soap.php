@@ -40,9 +40,9 @@ if (PEAR::isError($db)) {
 	die($db->getMessage());
 }
 
-$calendrier =& new Calendrier($db);
+$calendrier = new Calendrier($db);
 
-$calendar_soap =& new Calendrier_soap($calendrier);
+$calendar_soap = new Calendrier_soap($calendrier);
 
 // Switch off notices to all GET
 error_reporting(E_ALL ^ E_NOTICE);

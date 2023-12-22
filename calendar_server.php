@@ -42,16 +42,16 @@ require_once('includes/my_log.inc.php');
 
 require_once 'DB.php';
 
-$db =& DB::connect($dsn);
+$db = DB::connect($dsn);
 if (PEAR::isError($db)) {
 	die($db->getMessage());
 }
 
-$log =& new MyLog($db, 'calendar_server');
+$log = new MyLog($db, 'calendar_server');
 $log->debug("Entrée dans calendar_server");
 
 // authentification
-$auth =& new Auth($db);
+$auth = new Auth($db);
 
 /* instanciation des routines d'accès au calendrier */
 $cal = 0;
@@ -67,7 +67,7 @@ if (! $calendrier->isActive()) {
 }
 
 /* authentification du calendrier */
-$cal_auth =& new CalendarAuth($calendrier, $auth);
+$cal_auth = new CalendarAuth($calendrier, $auth);
 
 /* real stuff */
 if (!$cal_auth->checkWrite()) {
@@ -78,6 +78,7 @@ require_once 'HTML/AJAX/Server.php';
 $server = new HTML_AJAX_Server();
 
 // Register your class with it...
-$server->registerClass(new Calendrier_xmlrpc($calendrier, $auth->getId()));
+$calendrier_rpc = new Calendrier_xmlrpc($calendrier, $auth->getId());
+$server->registerClass($calendrier_rpc);
 $server->handleRequest();
 ?>

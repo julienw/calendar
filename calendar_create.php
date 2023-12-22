@@ -169,8 +169,8 @@ HTML;
 
 function print_form_members(&$existingCalendar) {
 	global $db;
-	$arrUsers =& $existingCalendar->getSubscribedUsers();
-	$arrAllUsers =& Calendrier::getAllUsers($db);
+	$arrUsers = $existingCalendar->getSubscribedUsers();
+	$arrAllUsers = Calendrier::getAllUsers($db);
 
 	echo <<<HTML
 	<fieldset id='choix-membres'>
@@ -249,16 +249,16 @@ $titles_form_rss = array(
 		);
 
 /* connexion sql */
-$db =& DB::connect($dsn);
+$db = DB::connect($dsn);
 if (PEAR::isError($db)) {
 	die($db->getMessage());
 }
 
 /* log */
-$log =& new MyLog($db, 'calendar_create.php');
+$log = new MyLog($db, 'calendar_create.php');
 
 /* authentification */
-$auth =& new Auth($db);
+$auth = new Auth($db);
 
 if (! $auth->check()) {
 	/* il faut être authentifié pour pouvoir demander ou modifier un calendrier */

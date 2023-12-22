@@ -89,7 +89,7 @@ class Node_Writer {
 	 */
 	function replace_variables_to_javascript($value) {
 		$value = addslashes($value);
-		$value = preg_replace('/__([A-Z]+)__/e', '"\' + " . addslashes(strtolower("$1")) . " + \'"', $value);
+		$value = preg_replace_callback('/__([A-Z]+)__/', function ($matches) { return "' +" . addslashes(strtolower($matches[1])) . "+ '"; }, $value);
 		return $value;
 	}
 

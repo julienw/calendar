@@ -90,7 +90,7 @@ class Calendrier {
 		$this->cal_nb = $cal;
 		$this->db =& $db;
 
-		$this->log =& new MyLog($db, 'calendrier');
+		$this->log = new MyLog($db, 'calendrier');
 	}
 
 	/**
@@ -152,13 +152,13 @@ class Calendrier {
 			OR (c.rights_subscribed > 0 AND cu.id_user = ? AND cu.id_cal = c.id)
 			ORDER BY c.name";
 
-		$res =& $db->getAll($statement_subscribed_calendars, array($id_user, $id_user), DB_FETCHMODE_ASSOC);
+		$res = $db->getAll($statement_subscribed_calendars, array($id_user, $id_user), DB_FETCHMODE_ASSOC);
 		Calendrier::checkSql($res);
 
 		foreach($res as $cal_info) {
-			$newCal =& new Calendrier($db, $cal_info['id']);
+			$newCal = new Calendrier($db, $cal_info['id']);
 			$newCal->_setName($cal_info['name']);
-			$arrRes[] =& $newCal;
+			$arrRes[] = $newCal;
 		}
 		return $arrRes;
 	}
@@ -166,7 +166,7 @@ class Calendrier {
 	function &getAllUsers(&$db) {
 		global $table_prefix;
 		$statement = "SELECT id, username FROM " . $table_prefix . "users";
-		$res =& $db->getAll($statement, array(), DB_FETCHMODE_ASSOC);
+		$res = $db->getAll($statement, array(), DB_FETCHMODE_ASSOC);
 		Calendrier::checkSql($res);
 		return $res;
 	}
@@ -348,7 +348,7 @@ class Calendrier {
 	}
 
 	function exists() {
-		$res =& $this->db->getOne($this->statement_exists, array($this->cal_nb));
+		$res = $this->db->getOne($this->statement_exists, array($this->cal_nb));
 		$this->checkSql($res);
 		return ($res > 0);
 	}
@@ -406,7 +406,7 @@ class Calendrier {
 
 	function fetchCalendarInfo() {
 		$this->log->debug("fetchCalendarInfo()");
-		$res =& $this->db->query($this->statement_fetchinfo, array($this->cal_nb));
+		$res = $this->db->query($this->statement_fetchinfo, array($this->cal_nb));
 		$this->checkSql($res);
 
 		$row = $res->fetchRow();
@@ -453,28 +453,28 @@ class Calendrier {
 
 	function addUserToEvent($event_id, $user_id) {
 		$this->log->debug("addUserToEvent(event_id=$event_id, user_id=$user_id)");
-		$res =& $this->db->query($this->statement_write_user, array($event_id, $user_id));
+		$res = $this->db->query($this->statement_write_user, array($event_id, $user_id));
 		$this->checkSql($res);
 		$this->log->debug("/addUserToEvent($event_id, $user_id)");
 	}
 
 	function removeUserFromEvent($event_id, $user_id) {
-		$res =& $this->db->query($this->statement_remove_user, array($event_id, $user_id));
+		$res = $this->db->query($this->statement_remove_user, array($event_id, $user_id));
 		$this->checkSql($res);
 	}
 
 
 	function & readData($year = null, $month = null, $day = null) {
 		if ($day != null) {
-			$data =& $this->db->getAll($this->statement_read,
+			$data = $this->db->getAll($this->statement_read,
 					array("$year-$month-$day", $this->cal_nb), DB_FETCHMODE_ASSOC);
 		} elseif ($month != null) {
-			$data =& $this->db->getAll($this->statement_read_month,
+			$data = $this->db->getAll($this->statement_read_month,
 					array($year, $month, $this->cal_nb), DB_FETCHMODE_ASSOC);
 		} elseif ($year != null) {
 			return 0;
 		} else {
-			$data =& $this->db->getAll($this->statement_read_all, array($this->cal_nb), DB_FETCHMODE_ASSOC);
+			$data = $this->db->getAll($this->statement_read_all, array($this->cal_nb), DB_FETCHMODE_ASSOC);
 		}
 		$this->checkSql($data);
 		
@@ -482,13 +482,13 @@ class Calendrier {
 	}
 
 	function & readUsersForEvent($id_event) {
-		$data =& $this->db->getCol($this->statement_read_users, 0, array($id_event));
+		$data = $this->db->getCol($this->statement_read_users, 0, array($id_event));
 		$this->checkSql($data);
 		return $data;
 	}
 
 	function & readDataForUserId($user_id, $year, $month) {
-		$data =& $this->db->getAll($this->statement_read_foruserid,
+		$data = $this->db->getAll($this->statement_read_foruserid,
 				array($user_id, $year, $month, $this->cal_nb), DB_FETCHMODE_ASSOC);
 		$this->checkSql($data);
 		
@@ -496,7 +496,7 @@ class Calendrier {
 	}
 
 	function & readAllDataForUser($user) {
-		$data =& $this->db->getAll($this->statement_readall_foruser,
+		$data = $this->db->getAll($this->statement_readall_foruser,
 				array($user, $this->cal_nb), DB_FETCHMODE_ASSOC);
 		$this->checkSql($data);
 		
@@ -504,14 +504,14 @@ class Calendrier {
 	}
 	
 	function modifyData($data, $id) {
-		$res =& $this->db->query($this->statement_mod, array($data, $id));
+		$res = $this->db->query($this->statement_mod, array($data, $id));
 		$this->checkSql($res);
 	}
 
 	function deleteData($id) {
-		$res =& $this->db->query($this->statement_del, array($id));
+		$res = $this->db->query($this->statement_del, array($id));
 		$this->checkSql($res);
-		$res =& $this->db->query($this->statement_del_users, array($id));
+		$res = $this->db->query($this->statement_del_users, array($id));
 		$this->checkSql($res);
 	}
 
@@ -522,32 +522,32 @@ class Calendrier {
 	}
 
 	function & getUsersForEvent($id) {
-		$res =& $this->db->getAll($this->statement_users, array($id));
+		$res = $this->db->getAll($this->statement_users, array($id));
 		$this->checkSql($res);
 		
 		return $res;
 	}
 
 	function & getLastEntries($minnumber = 10, $delay = 5) {
-		$res =& $this->db->getAll($this->statement_rss1, array($this->cal_nb, $delay), DB_FETCHMODE_ASSOC);
+		$res = $this->db->getAll($this->statement_rss1, array($this->cal_nb, $delay), DB_FETCHMODE_ASSOC);
 		$this->checkSql($res);
 		if (count($res) >= $minnumber) {
 			return $res;
 		}
 
-		$res =& $this->db->getAll($this->statement_rss2, array($this->cal_nb, $minnumber), DB_FETCHMODE_ASSOC);
+		$res = $this->db->getAll($this->statement_rss2, array($this->cal_nb, $minnumber), DB_FETCHMODE_ASSOC);
 		$this->checkSql($res);
 		return $res;
 	}
 
 	function & getNextEntries($minnumber = 10) {
-		$res =& $this->db->getAll($this->statement_rss_next, array($this->cal_nb, $minnumber), DB_FETCHMODE_ASSOC);
+		$res = $this->db->getAll($this->statement_rss_next, array($this->cal_nb, $minnumber), DB_FETCHMODE_ASSOC);
 		$this->checkSql($res);
 
 		return $res;
 	}
 	function & getNextEntriesForUser($user, $minnumber = 10) {
-		$res =& $this->db->getAll($this->statement_rss_next_for_user, array($user, $minnumber), DB_FETCHMODE_ASSOC);
+		$res = $this->db->getAll($this->statement_rss_next_for_user, array($user, $minnumber), DB_FETCHMODE_ASSOC);
 		$this->checkSql($res);
 
 		return $res;
@@ -563,25 +563,25 @@ class Calendrier {
 		
 		$statement = sprintf($this->statement_search, $where_clause);
 
-		$res =& $this->db->getOne($statement, array($this->cal_nb));
+		$res = $this->db->getOne($statement, array($this->cal_nb));
 		$this->checkSql($res);
 
 		return $res;
 	}
 
 	function isSubscribedUser($id_user) {
-		$res =& $this->db->getOne($this->statement_is_subscribed, array($this->cal_nb, $id_user));
+		$res = $this->db->getOne($this->statement_is_subscribed, array($this->cal_nb, $id_user));
 		$this->checkSql($res);
 		return ($res > 0);
 	}
 
 	function toggleActive() {
-		$res =& $this->db->query($this->statement_active_calendar);
+		$res = $this->db->query($this->statement_active_calendar);
 		$this->checkSql($res);
 	}
 
 	function isActive() {
-		$res =& $this->db->getOne($this->statement_is_active, $this->cal_nb);
+		$res = $this->db->getOne($this->statement_is_active, $this->cal_nb);
 		$this->checkSql($res);
 
 		return ($res > 0);	
@@ -589,7 +589,7 @@ class Calendrier {
 
 	function getOwner() {
 		if (! isset($this->id_owner)) {
-			$res =& $this->db->getOne($this->statement_get_owner, $this->cal_nb);
+			$res = $this->db->getOne($this->statement_get_owner, $this->cal_nb);
 			$this->checkSql($res);
 
 			$this->id_owner = $res;
@@ -617,7 +617,7 @@ class Calendrier {
 		$statement = sprintf($this->statement_update, $where_statement);
 		$values[] = $this->cal_nb;
 
-		$res =& $this->db->query($statement, $values);
+		$res = $this->db->query($statement, $values);
 		$this->checkSql($res);
 
 		$this->delayedWrite = false;
@@ -630,7 +630,7 @@ class Calendrier {
 			$this->updatedFields[] = array('field' => 'name', 'value' => $name);
 		} else {
 			$statement = sprintf($this->statement_update, "name = ?");
-			$res =& $this->db->query($statement, array($name, $this->cal_nb));
+			$res = $this->db->query($statement, array($name, $this->cal_nb));
 			$this->checkSql($res);
 		}
 		$this->log->debug("/setName");
@@ -648,7 +648,7 @@ class Calendrier {
 			$statement = sprintf($this->statement_update, "rights_users = ?, rights_subscribed = ?, rights_guests = ?");
 			$values = $rights;
 			array_push($values, $this->cal_nb);
-			$res =& $this->db->query($statement, $values);
+			$res = $this->db->query($statement, $values);
 			$this->checkSql($res);
 		}
 
@@ -667,7 +667,7 @@ class Calendrier {
 			$statement = sprintf($this->statement_update, "rss_last = ?, rss_next = ?, rss_next_user = ?");
 			$values = $rss_titles;
 			array_push($values, $this->cal_nb);
-			$res =& $this->db->query($statement, $values);
+			$res = $this->db->query($statement, $values);
 			$this->checkSql($res);
 		}
 		$this->log->debug("/setRssTitles");
@@ -679,27 +679,27 @@ class Calendrier {
 			$this->updatedFields[] = array('field' => 'new_event_label', 'value' => $label);
 		} else {
 			$statement = sprintf($this->statement_update, "new_event_label = ?");
-			$res =& $this->db->query($statement, $label);
+			$res = $this->db->query($statement, $label);
 			$this->checkSql($res);
 		}
 	}
 
 	function &getSubscribedUsers() {
-		$res =& $this->db->getAll($this->statement_subscribed_users, array($this->cal_nb), DB_FETCHMODE_ASSOC);
+		$res = $this->db->getAll($this->statement_subscribed_users, array($this->cal_nb), DB_FETCHMODE_ASSOC);
 		$this->checkSql($res);
 
 		return $res;
 	}
 
 	function setSubscribedUsers(&$users) {
-		$res =& $this->db->query($this->statement_delete_subscribed_users, $this->cal_nb);
+		$res = $this->db->query($this->statement_delete_subscribed_users, $this->cal_nb);
 		$this->checkSql($res);
 
 		$sth = $this->db->prepare($this->statement_subscribe_user);
 		$this->checkSql($sth);
 
 		foreach ($users as $uid) {
-			$res =& $this->db->execute($sth, array($this->cal_nb, $uid));
+			$res = $this->db->execute($sth, array($this->cal_nb, $uid));
 			$this->checkSql($res);
 		}
 	}

@@ -47,8 +47,8 @@ if (isset($_GET['cal'])) {
 }
 
 /* authentification */
-$auth =& new Auth($db);
-$cal_auth =& new CalendarAuth($calendrier, $auth);
+$auth = new Auth($db);
+$cal_auth = new CalendarAuth($calendrier, $auth);
 if (! $cal_auth->checkRead()) exit;
 
 if (!empty($_GET['user'])) {

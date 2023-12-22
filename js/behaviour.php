@@ -98,7 +98,7 @@ function submitNewEvent(day) {
 		var id = h.writeData(data, year, month, day);
 		h.Async(handler);
 <?php
-$event_writer =& Event_Writer::getInstance();
+$event_writer = Event_Writer::getInstance();
 print $event_writer->get_as_javascript();
 ?>
 	}

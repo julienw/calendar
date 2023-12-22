@@ -35,28 +35,28 @@ class Event_Form_Writer extends Node_Writer {
 	function Event_Form_Writer() {
 
 		/* partie formulaire */
-		$form =& new XML_Tree_Node('form');
+		$form = new XML_Tree_Node('form');
 		$form->setAttribute('action', 'actions.php');
 		$form->setAttribute('id', 'form__ID__');
 		$form->setAttribute('class', 'event');
 		$form->setAttribute('onsubmit', 'submitOneForm(__ID__); return false');
 
 		/* zone d'input */
-		$input =& new XML_Tree_Node('input');
+		$input = new XML_Tree_Node('input');
 		$input->setAttribute('type', 'text');
 		$input->setAttribute('id', 'input__ID__');
 		$input->setAttribute('name', 'input__ID__');
 		$input->setAttribute('value', '__DATA__');
 		$input->setAttribute('onclick', 'dontPropagate(event); return true');
 		
-		$hidden =& new XML_Tree_Node('input');
+		$hidden = new XML_Tree_Node('input');
 		$hidden->setAttribute('type', 'hidden');
 		$hidden->setAttribute('name', 'id');
 		$hidden->setAttribute('value', '__ID__');
 		
 		$form->addChild($input);
 		$form->addChild($hidden);
-		$this->nodes[] =& $form;
+		$this->nodes[] = $form;
 		
 	}
 }

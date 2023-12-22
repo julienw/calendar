@@ -33,18 +33,18 @@ require_once('node_writer.inc.php');
 class Event_TextEmpty_Writer extends Node_Writer {
 
 	function Event_TextEmpty_Writer() {
-		$div =& new XML_Tree_Node('div');
+		$div = new XML_Tree_Node('div');
 		$div->setAttribute('class', 'event vevent');
 
 		/* 'dd' de l'événement : intitulé */
-		$users =& new XML_Tree_Node('dd', '[__USERS__]');
-		$data =& new XML_Tree_Node('dd', '__DATA__');
+		$users = new XML_Tree_Node('dd', '[__USERS__]');
+		$data = new XML_Tree_Node('dd', '__DATA__');
 		$data->setAttribute('class', 'summary');
 
 		$div->addChild($users);
 		$div->addChild($data);
 		
-		$this->nodes[] =& $div;
+		$this->nodes[] = $div;
 	}
 }
 ?>
