@@ -33,7 +33,6 @@ require_once 'conf/config.inc.php';
 
 // ma classe
 require_once('includes/calendrier.inc.php');
-require_once('includes/calendrier_xmlrpc.inc.php');
 // auth
 require_once('includes/auth.inc.php');
 require_once('includes/calendar_auth.inc.php');
@@ -51,11 +50,7 @@ $log->debug("Entrée dans calendar_server");
 $auth = new Auth($db);
 
 /* instanciation des routines d'accès au calendrier */
-$cal = 0;
-if (isset($_GET['cal'])) {
-	$cal = htmlspecialchars($_GET['cal'], ENT_QUOTES);
-}
-
+$cal = $_POST['cal'] ?? 0;
 $calendrier = new Calendrier($db, $cal);
 
 if (! $calendrier->isActive()) {
@@ -71,11 +66,27 @@ if (!$cal_auth->checkWrite()) {
 	die('Non autorisé');
 }
 
-require_once 'HTML/AJAX/Server.php';
-$server = new HTML_AJAX_Server();
-
-// Register your class with it...
-$calendrier_rpc = new Calendrier_xmlrpc($calendrier, $auth->getId());
-$server->registerClass($calendrier_rpc);
-$server->handleRequest();
+$user_id = $auth->getId();
+switch($_POST['action']) {
+  case 'writeData': {
+    $result = $calendrier->writeData($_POST['text'], $_POST['year'], $_POST['month'], $_POST['day'], $user_id);
+    echo $result;
+    exit();
+    break;
+  }
+  case 'modifyData':
+    $calendrier->modifyData($_POST['text'], $_POST['id']);
+    break;
+  case 'deleteData':
+    $calendrier->deleteData($_POST['id']);
+    break;
+  case 'addUser':
+    $calendrier->addUserToEvent($_POST['id'], $user_id);
+    break;
+  case 'removeUser':
+    $calendrier->removeUserFromEvent($_POST['id'], $user_id);
+    break;
+  default:
+    die("Unknown action " . $_POST['action']);
+}
 ?>

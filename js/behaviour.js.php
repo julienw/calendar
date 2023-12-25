@@ -23,6 +23,7 @@
    4 octobre 2005
  */
 
+require_once '../conf/config.inc.php';
 require_once '../includes/event_writer.inc.php';
 header('Content-Type: text/javascript');
 ?>
@@ -81,7 +82,7 @@ function doDeleteData(id) {
 }
 
 /* ajout d'un nouvel evenement */
-function submitNewEvent(day) {
+async function submitNewEvent(day) {
     var myinput = document.getElementById('inputnew' + day);
     var data = myinput.value;
 	var horaire = "00:00";
@@ -93,10 +94,7 @@ function submitNewEvent(day) {
 	if (data != '') {
 
 		/* ecriture dans la base */
-		/* synchrone pour l'instant */
-		h.Sync();
-		var id = h.writeData(data, year, month, day);
-		h.Async(handler);
+		var id = await h.writeData(data, year, month, day);
 <?php
 $event_writer = Event_Writer::getInstance();
 print $event_writer->get_as_javascript();
@@ -110,7 +108,7 @@ print $event_writer->get_as_javascript();
 /* Remplacement du texte du lien */
 function changeEvent(day, data) {
     var myevttitle = document.getElementById('evttitle' + day);
-    myevttitle.innerHTML = data;
+    myevttitle.textContent = data;
 }
 
 function doAddUser(id) {
@@ -185,29 +183,38 @@ function dontPropagate(e) {
 	if (e.stopPropagation) e.stopPropagation();
 }
 
-/* callback pour les fonctions asynchrones */
-/* il ne fait rien, il ne sert qu'a recuperer les reponses */
-function CalendrierCallBack() {}
-CalendrierCallBack.prototype = {
-	deleteData : function(response) {
-				 },
-				 
-	modifyData : function(response) {
-				 },
+const h = {
+  _query: async function(payload) {
+    const url = '<?php echo $site_url ?>/calendar_server.php';
+    const body = new URLSearchParams({
+      ...payload,
+      cal: <?php echo $_GET['cal'] ?? 0 ?>,
+    });
+    const res = await fetch(url, { method: "POST", body });
+    const value = await res.text();
+    return value;
+  },
+  deleteData: function(id) {
+    this._query({ action: 'deleteData', id });
+  },
 
-	writeData : function(response) {
-				},
-				
-	addUser : function (response) {
-			  },
+  modifyData: function(text, id) {
+    this._query({ action: 'modifyData', text, id });
+  },
 
-	removeUser : function (response) {
-			  }
-}
+  writeData: async function(text, year, month, day) {
+    return await this._query({ action: 'writeData', text, year, month, day });
+  },
 
-/* instanciation des routines du calendrier */
-var handler = new CalendrierCallBack();
-var h = new Calendrier_xmlrpc(handler);
+  addUser: function (id) {
+    this._query({ action: 'addUser', id });
+  },
+
+  removeUser: function (id) {
+    this._query({ action: 'removeUser', id });
+  }
+};
+
 window.onload = pageLoaded;
 
 
