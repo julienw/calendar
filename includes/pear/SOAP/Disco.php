@@ -36,7 +36,7 @@ class SOAP_DISCO_Server extends SOAP_Base_Object
     var $soap_server    = NULL;
 
 
-    function SOAP_DISCO_Server($soap_server, $service_name, $service_desc = '', $import_ns = null)
+    function __construct($soap_server, $service_name, $service_desc = '', $import_ns = null)
     {
         parent::SOAP_Base_Object('Server');
 

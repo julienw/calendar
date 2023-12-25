@@ -32,7 +32,7 @@ class Auth {
 	var $guest_user = "guest";
 	var $log;
 	
-	function Auth(&$db) {
+	function __construct(&$db) {
 		global $table_prefix;
 		$this->db =& $db;
 		$this->table = $table_prefix . "users";

@@ -22,7 +22,7 @@ class CalendarAuth {
 	var $calendar;
 	var $auth;
 
-	function CalendarAuth(&$calendar, &$auth) {
+	function __construct(&$calendar, &$auth) {
 		$this->calendar =& $calendar;
 		$this->auth =& $auth;
 	}

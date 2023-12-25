@@ -32,7 +32,7 @@ require_once('node_writer.inc.php');
 
 class Event_TextEmpty_Writer extends Node_Writer {
 
-	function Event_TextEmpty_Writer() {
+	function __construct() {
 		$div = new XML_Tree_Node('div');
 		$div->setAttribute('class', 'event vevent');
 

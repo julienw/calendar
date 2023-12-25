@@ -51,7 +51,7 @@ class Calendrier_soap {
 				),
 			);
 
-	function Calendrier_soap (& $calendrier) {
+	function __construct(& $calendrier) {
 		$this->calendrier =& $calendrier;
 	}
 

@@ -31,7 +31,7 @@ class Node_Writer {
 	// array of XML_Tree_Node instances
 	var $nodes;
 
-	function Node_Writer() {
+	function __construct() {
 		die("This class is abstract, it should not be instanciated.");
 	}
 

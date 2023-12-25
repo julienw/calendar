@@ -40,8 +40,8 @@ class Event extends Calendar_Decorator {
 	var $event_writer;
 	var $authenticated;
 	
-	function Event (& $Calendar, & $Calendrier, $authenticated = false) {
-		parent::Calendar_Decorator($Calendar);
+	function __construct (& $Calendar, & $Calendrier, $authenticated = false) {
+		parent::__construct($Calendar);
 		$this->calendrier =& $Calendrier;
 		$this->event_writer = Event_Writer::getInstance();
 		$this->authenticated = $authenticated;

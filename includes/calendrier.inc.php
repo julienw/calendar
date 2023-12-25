@@ -84,7 +84,7 @@ class Calendrier {
 	var $statement_delete_subscribed_users;
 	var $statement_subscribe_user;
 
-	function Calendrier(&$db, $cal = 0) {
+	function __construct(&$db, $cal = 0) {
 
 		$this->init();
 		$this->cal_nb = $cal;

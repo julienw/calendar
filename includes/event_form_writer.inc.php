@@ -32,7 +32,7 @@ require_once('node_writer.inc.php');
 
 class Event_Form_Writer extends Node_Writer {
 
-	function Event_Form_Writer() {
+	function __construct() {
 
 		/* partie formulaire */
 		$form = new XML_Tree_Node('form');

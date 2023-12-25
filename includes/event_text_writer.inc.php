@@ -32,7 +32,7 @@ require_once('node_writer.inc.php');
 
 class Event_Text_Writer extends Node_Writer {
 
-	function Event_Text_Writer() {
+	function __construct() {
 		/* partie texte */
 		$cell1 = new XML_Tree_Node('dt');
 

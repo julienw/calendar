@@ -29,7 +29,7 @@ class MyLog {
 	var $log;
 	var $loglevel = PEAR_LOG_DEBUG;
 
-	function MyLog (&$db, $ident) {
+	function __construct(&$db, $ident) {
 		global $table_prefix;
 
     $conf = array(

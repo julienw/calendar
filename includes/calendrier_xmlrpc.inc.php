@@ -35,7 +35,7 @@ class Calendrier_xmlrpc {
 	var $calendrier;
 	var $user_id;
 	
-	function Calendrier_xmlrpc (&$calendrier, $user_id) {
+	function __construct(&$calendrier, $user_id) {
 		$this->calendrier =& $calendrier;
 		$this->user_id = $user_id;
 	}
