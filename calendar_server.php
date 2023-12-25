@@ -45,12 +45,12 @@ $db = new PDO($dsn, null, null, array(
 ));
 
 $log = new MyLog($db, 'calendar_server');
-$log->debug("Entrée dans calendar_server");
+$log->debug("EntrÃ©e dans calendar_server");
 
 // authentification
 $auth = new Auth($db);
 
-/* instanciation des routines d'accès au calendrier */
+/* instanciation des routines d'accÃ¨s au calendrier */
 $cal = 0;
 if (isset($_GET['cal'])) {
 	$cal = htmlspecialchars($_GET['cal'], ENT_QUOTES);
@@ -68,7 +68,7 @@ $cal_auth = new CalendarAuth($calendrier, $auth);
 
 /* real stuff */
 if (!$cal_auth->checkWrite()) {
-	die('Non autorisé');
+	die('Non autorisÃ©');
 }
 
 require_once 'HTML/AJAX/Server.php';
