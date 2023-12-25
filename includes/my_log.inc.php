@@ -23,31 +23,34 @@
    14 février 2006
  */
 
-require_once 'Log.php';
-
 class MyLog {
-	var $log;
-	var $loglevel = PEAR_LOG_DEBUG;
+  var $db;
+  var $statement;
+	var $loglevel = 6;
 
 	function __construct(&$db, $ident) {
 		global $table_prefix;
 
-    $conf = array(
-      'db' => $db,
-      'sequence' => $table_prefix . 'log_id'
-    );
-		$this->log = Log::singleton('sql', $table_prefix . 'log', getmypid() . ' ' . $ident, $conf, $this->loglevel);
+    $sql = "INSERT INTO ${table_prefix}log (ident, priority, message) VALUES ('calendar_server', :priority, :message)";
+    $this->statement = $db->prepare($sql);
 	}
 
+  function log($str, $level) {
+    if ($level > $this->loglevel) {
+      return;
+    }
+    $this->statement->execute(['priority' => $level, 'message' => substr($str, 0, 200)]);
+  }
+
 	function debug($str) {
-		$this->log->debug($str);
+    $this->log($str, 6);
 	}
 
 	function info($str) {
-		$this->log->info($str);
+    $this->log($str, 5);
 	}
 
-	function notice($str) {
-		$this->log->notice($str);
+	function warn($str) {
+    $this->log($str, 4);
 	}
 }
