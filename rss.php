@@ -18,9 +18,8 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-require_once('includes/calendrier.inc.php');
-
 require_once 'conf/config.inc.php';
+require_once('includes/calendrier.inc.php');
 require_once 'includes/auth.inc.php';
 require_once 'includes/calendar_auth.inc.php';
 

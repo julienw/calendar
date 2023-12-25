@@ -23,9 +23,8 @@
    22 sept 2005
    */
 
-require_once('includes/calendrier.inc.php');
-
 require_once 'conf/config.inc.php';
+require_once('includes/calendrier.inc.php');
 require_once 'includes/auth.inc.php';
 require_once 'includes/calendar_auth.inc.php';
 

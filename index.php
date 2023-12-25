@@ -24,6 +24,8 @@
  */
 session_start();
 
+require_once 'conf/config.inc.php';
+
 require_once 'Calendar/Month/Weekdays.php';
 require_once 'Calendar/Util/Uri.php';
 require_once 'Calendar/Util/Textual.php';
@@ -33,8 +35,6 @@ require_once('includes/calendrier.inc.php');
 require_once('includes/auth.inc.php');
 require_once('includes/calendar_auth.inc.php');
 require_once 'includes/my_log.inc.php';
-
-require_once 'conf/config.inc.php';
 
 /* pour les noms des mois (TODO : rendre configurable) */
 setlocale(LC_TIME, 'fr_FR');
