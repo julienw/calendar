@@ -20,24 +20,26 @@
 
 require_once 'conf/config.inc.php';
 require_once 'includes/my_log.inc.php';
+require_once 'includes/db_utils.inc.php';
 
 class Auth {
-	var $db;
+  var $statement_auth;
+  var $statement_fetchId;
 	var $id;
 	var $type;
 	var $user;
 	var $password;
-	var $table;
 	var $result;
 	var $guest_user = "guest";
 	var $log;
 	
 	function __construct(&$db) {
 		global $table_prefix;
-		$this->db =& $db;
-		$this->table = $table_prefix . "users";
+		$table = $table_prefix . "users";
 
 		$this->log = new MyLog($db, 'auth');
+    $this->statement_auth = prepare($db, 'SELECT id FROM ' . $table . ' WHERE username=? AND passwd=? LIMIT 1');
+    $this->statement_fetchId = prepare($db, 'SELECT id FROM ' . $table . ' WHERE username=? LIMIT 1');
 	}
 	
 	function check() {
@@ -104,16 +106,12 @@ class Auth {
 
 	function authenticate() {
 		$this->log->debug("authenticate()");
-		$query = 'SELECT id FROM ' . $this->table . ' WHERE username=? AND passwd=? LIMIT 1';
-		$id = $this->db->getOne($query, array($this->user, sha1($this->password)));
-		if (PEAR::isError($id)) {
-			die($id->getMessage());
-		}
-		if (empty($id)) {
+    $id = getOne($this->statement_auth, array($this->user, sha1($this->password)));
+		if ($id === false) {
 			$this->log->debug("/authenticate() -> false");
 			return false;
 		}
-		
+
 		$this->id = $id;
 		$this->log->debug("/authenticate() -> true");
 		return true;
@@ -121,9 +119,8 @@ class Auth {
 
 	function fetchId() {
 		$this->log->debug("fetchId() <- user={$this->user}");
-		$query = 'SELECT id FROM ' . $this->table . ' WHERE username=? LIMIT 1';
-		$this->id = $this->db->getOne($query, array($this->user));
-    if (empty($id)) {
+		$this->id = getOne($this->statement_fetchId, array($this->user));
+    if ($this->id === false) {
       $this->log->debug("/fetchId() -> id hasn't been found");
       return false;
     }

@@ -25,6 +25,7 @@
 
 require_once 'conf/config.inc.php';
 require_once 'includes/my_log.inc.php';
+require_once 'includes/db_utils.inc.php';
 
 /* constantes pour les droits */
 define("CALENDRIER_PUB_NONE", 0); /* aucun droit */
@@ -85,12 +86,11 @@ class Calendrier {
 	var $statement_subscribe_user;
 
 	function __construct(&$db, $cal = 0) {
+    $this->db =& $db;
+    $this->cal_nb = $cal;
+    $this->log = new MyLog($db, 'calendrier');
 
 		$this->init();
-		$this->cal_nb = $cal;
-		$this->db =& $db;
-
-		$this->log = new MyLog($db, 'calendrier');
 	}
 
 	/**
@@ -109,40 +109,25 @@ class Calendrier {
 			"(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		*/
 		/* pgsql */
-		$statement = "INSERT INTO " . $table_prefix . "calendars (name, id_owner, " .
+		$sql = "INSERT INTO " . $table_prefix . "calendars (name, id_owner, " .
 			"rights_users, rights_subscribed, rights_guests, rss_last, rss_next, rss_next_user, new_event_label, active) VALUES ".
-			"($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id";
+			"(?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
 		
 		array_unshift($rights, $name, $id_owner);
-		$array = array_merge($rights, $titles_rss);
-		array_push($array, $labelNewEvent);
-		array_push($array, $active);
+		$values = array_merge($rights, $titles_rss);
+		array_push($values, $labelNewEvent);
+		array_push($values, $active);
 
-		/* mysql
-		$res =& $db->query($statement, $array);
-		Calendrier::checkSql($res);
-
-		// FIXME à modifier plus tard
-		$cal_id = mysql_insert_id($db->connection);
-		*/
-		/* pgsql */
-		$result = pg_query_params($statement, $array);
-
-		if (! $result) {
-			die ("DB Error");
-		}
-
-		$cal_id = pg_fetch_result($result, 0, 0);
-		
-
+    $statement = prepare($db, $sql);
+    $cal_id = getOne($statement, $values);
 		return new Calendrier($db, $cal_id);
 	}
 
 	/* cette méthode est une factory */
-	function &getSubscribedCalendars(&$db, $id_user) {
+	static function &getSubscribedCalendars(&$db, $id_user) {
 		global $table_prefix;
 		/* "true" au lieu de "1" dans postgresql */
-		$statement_subscribed_calendars =
+		$sql_subscribed_calendars =
 			"SELECT DISTINCT c.id as id, c.name as name
 			FROM " . $table_prefix ."calendars c,
 				 " . $table_prefix ."users u LEFT OUTER JOIN
@@ -152,8 +137,8 @@ class Calendrier {
 			OR (c.rights_subscribed > 0 AND cu.id_user = ? AND cu.id_cal = c.id)
 			ORDER BY c.name";
 
-		$res = $db->getAll($statement_subscribed_calendars, array($id_user, $id_user), DB_FETCHMODE_ASSOC);
-		Calendrier::checkSql($res);
+    $statement = prepare($db, $sql_subscribed_calendars);
+		$res = query($statement, array($id_user, $id_user))->fetchAll();
 
 		foreach($res as $cal_info) {
 			$newCal = new Calendrier($db, $cal_info['id']);
@@ -163,37 +148,37 @@ class Calendrier {
 		return $arrRes;
 	}
 
-	function &getAllUsers(&$db) {
+	static function &getAllUsers(&$db) {
 		global $table_prefix;
 		$statement = "SELECT id, username FROM " . $table_prefix . "users";
-		$res = $db->getAll($statement, array(), DB_FETCHMODE_ASSOC);
-		Calendrier::checkSql($res);
+		$res = $db->query($statement);
 		return $res;
 	}
-	
+
 	function init() {
 		global $table_prefix;
-		/* mysql
-		$this->statement_write = "INSERT INTO " . $table_prefix . "events (event, jour, horaire, id_submitter, id_cal) VALUES ".
-			"(?, ?, ?, ?, ?)";
-		*/
-		/* pgsql */
-		/* pg_prepare("statement_write", "INSERT INTO " . $table_prefix . "events (event, jour, horaire, id_submitter, id_cal) VALUES ".
-			"($1, $2, $3, $4, $5) RETURNING id");
-     */
-    $this->statement_write = "INSERT INTO " . $table_prefix . "events (event, jour, horaire, id_submitter, id_cal) VALUES ".
-			"($1, $2, $3, $4, $5) RETURNING id";
-		$this->statement_write_user = "INSERT INTO " . $table_prefix . "events_users (id_event, id_user) VALUES (?, ?)";
-		$this->statement_read =
+    $this->statement_write = prepare(
+      $this->db,
+      "INSERT INTO " . $table_prefix . "events (event, jour, horaire, id_submitter, id_cal) VALUES (?, ?, ?, ?, ?) RETURNING id"
+    );
+    $this->statement_write_user = prepare(
+      $this->db,
+      "INSERT INTO " . $table_prefix . "events_users (id_event, id_user) VALUES (?, ?)"
+    );
+    $this->statement_read = prepare(
+      $this->db,
 			"SELECT id, event, horaire, jour
 			FROM " . $table_prefix . "events
 			WHERE jour=? AND id_cal=?
-			ORDER BY horaire ASC, id ASC";
-		$this->statement_read_month =
+      ORDER BY horaire ASC, id ASC"
+    );
+    $this->statement_read_month = prepare(
+      $this->db,
 			"SELECT id, event, horaire, jour
 			FROM " . $table_prefix . "events
 			WHERE extract(year from jour) = ? AND extract(month from jour) = ? AND id_cal = ?
-			ORDER BY horaire ASC, id ASC";
+      ORDER BY horaire ASC, id ASC"
+    );
 /* mysql
 		$this->statement_read_all =
 			"SELECT id, event, horaire, jour, UNIX_TIMESTAMP(submit_timestamp) timestamp
@@ -201,21 +186,27 @@ class Calendrier {
 			ORDER BY jour ASC, horaire ASC, id ASC";
 */
 /* pgsql */
-		$this->statement_read_all =
+		$this->statement_read_all = prepare(
+      $this->db, 
 			"SELECT id, event, horaire, jour, extract(epoch from submit_timestamp) timestamp
 			FROM " . $table_prefix . "events WHERE id_cal = ?
-			ORDER BY jour ASC, horaire ASC, id ASC";
-		$this->statement_read_users =
+      ORDER BY jour ASC, horaire ASC, id ASC"
+    );
+    $this->statement_read_users = prepare(
+      $this->db,
 			"SELECT u.username username
 			FROM " . $table_prefix . "users u, " . $table_prefix . "events_users cu
 			WHERE cu.id_event = ? AND cu.id_user = u.id
-			ORDER BY username";
-		$this->statement_read_foruserid =
+      ORDER BY username"
+    );
+    $this->statement_read_foruserid = prepare(
+      $this->db,
 			"SELECT c.id id, c.event event, c.horaire horaire, c.jour jour
 			FROM " . $table_prefix . "events c, " . $table_prefix . "events_users cu
 			WHERE cu.id_event=c.id AND cu.id_user = ? AND extract(year from jour) = ?
 			AND extract(month from jour) = ? AND c.id_cal = ?
-			ORDER BY horaire ASC, id ASC";
+      ORDER BY horaire ASC, id ASC"
+    );
 /* for mysql
 		$this->statement_readall_foruser =
 			"SELECT c.id id, c.event event, c.horaire horaire, c.jour jour, UNIX_TIMESTAMP(c.submit_timestamp) timestamp
@@ -224,19 +215,35 @@ class Calendrier {
 			ORDER BY jour ASC, horaire ASC, id ASC";
 */
 /* for pgsql */
-		$this->statement_readall_foruser =
+    $this->statement_readall_foruser = prepare(
+      $this->db,
 			"SELECT c.id id, c.event event, c.horaire horaire, c.jour jour, extract(epoch from c.submit_timestamp) timestamp
 			FROM " . $table_prefix . "events c, " . $table_prefix . "events_users cu, " . $table_prefix . "users u
 			WHERE cu.id_event=c.id AND cu.id_user = u.id AND u.username = ? AND c.id_cal = ?
-			ORDER BY jour ASC, horaire ASC, id ASC";
-		$this->statement_users =
+      ORDER BY jour ASC, horaire ASC, id ASC",
+    );
+		$this->statement_users = prepare(
+      $this->db,
 			"SELECT u.username username
 			FROM " . $table_prefix . "users u, " . $table_prefix . "events_users cu
-			WHERE u.id = cu.id_user AND cu.id_event = ? ORDER BY username";
-		$this->statement_mod = "UPDATE " . $table_prefix . "events SET event = ?, submit_timestamp = submit_timestamp WHERE id = ?";
-		$this->statement_del = "DELETE FROM " . $table_prefix . "events WHERE id = ?";
-		$this->statement_del_users = "DELETE FROM " . $table_prefix . "events_users WHERE id_event = ?";
-		$this->statement_remove_user = "DELETE FROM " . $table_prefix . "events_users WHERE id_event = ? AND id_user = ?";
+      WHERE u.id = cu.id_user AND cu.id_event = ? ORDER BY username"
+    );
+    $this->statement_mod = prepare(
+      $this->db,
+      "UPDATE " . $table_prefix . "events SET event = ?, submit_timestamp = submit_timestamp WHERE id = ?"
+    );
+    $this->statement_del = prepare(
+      $this->db,
+      "DELETE FROM " . $table_prefix . "events WHERE id = ?"
+    );
+    $this->statement_del_users = prepare(
+      $this->db,
+      "DELETE FROM " . $table_prefix . "events_users WHERE id_event = ?"
+    );
+    $this->statement_remove_user = prepare(
+      $this->db,
+      "DELETE FROM " . $table_prefix . "events_users WHERE id_event = ? AND id_user = ?"
+    );
 /* mysql
 		$this->statement_rss2 =
 			"SELECT c.id id, c.event event, c.horaire horaire, c.jour jour,
@@ -272,28 +279,35 @@ class Calendrier {
 			LIMIT ?";
 */
 /* pgsql */
-		$this->statement_rss2 =
+    $this->statement_rss2 = prepare(
+      $this->db,
 			"SELECT c.id id, c.event event, c.horaire horaire, c.jour jour,
 			extract(epoch from c.submit_timestamp) timestamp, u.username username
 			FROM " . $table_prefix . "events c, " . $table_prefix . "users u
 			WHERE c.id_submitter = u.id AND c.id_cal = ?
 			ORDER BY c.submit_timestamp DESC
-			LIMIT ?";
-		$this->statement_rss1 =
+      LIMIT ?"
+    );
+    $this->statement_rss1 = prepare(
+      $this->db,
 			"SELECT c.id id, c.event event, c.horaire horaire, c.jour jour,
 			extract(epoch from c.submit_timestamp) timestamp, u.username username
 			FROM " . $table_prefix . "events c, " . $table_prefix . "users u
 			WHERE c.id_submitter = u.id AND c.id_cal = ?
 			AND DATE_ADD(submit_timestamp, INTERVAL ? DAY) >= NOW()
-			ORDER BY c.submit_timestamp DESC";
-		$this->statement_rss_next =
+      ORDER BY c.submit_timestamp DESC"
+    );
+    $this->statement_rss_next = prepare(
+      $this->db,
 			"SELECT c.id id, c.event event, c.horaire horaire, c.jour jour,
 			extract(epoch from c.submit_timestamp) timestamp, u.username username
 			FROM " . $table_prefix . "events c, " . $table_prefix . "users u
 			WHERE c.id_submitter = u.id AND jour >= NOW() AND c.id_cal = ?
 			ORDER BY jour
-			LIMIT ?";
-		$this->statement_rss_next_for_user =
+      LIMIT ?"
+    );
+    $this->statement_rss_next_for_user = prepare(
+      $this->db,
 			"SELECT c.id id, c.event event, c.horaire horaire, c.jour jour, c.id_cal id_cal,
 			extract(epoch from c.submit_timestamp) timestamp, u.username username
 			FROM " . $table_prefix . "events c, " . $table_prefix . "users u,"
@@ -303,53 +317,75 @@ class Calendrier {
 			AND cu.sure = 1
 			AND c.id_submitter = u.id
 			ORDER BY jour
-			LIMIT ?";
-		$this->statement_search =
+      LIMIT ?"
+    );
+    $this->statement_search = prepare(
+      $this->db,
 			"SELECT jour FROM " . $table_prefix . "events
 			WHERE %s AND jour >= NOW() AND id_cal = ?
-			LIMIT 1";
+      LIMIT 1"
+    );
 
-		$this->statement_exists =
+    $this->statement_exists = prepare(
+      $this->db,
 			"SELECT count(id) FROM " .$table_prefix ."calendars
-			WHERE id = ?";
-		$this->statement_fetchinfo =
+      WHERE id = ?"
+    );
+    $this->statement_fetchinfo = prepare(
+      $this->db,
 			"SELECT name, rights_users, rights_subscribed, rights_guests,
 			rss_last, rss_next, rss_next_user, new_event_label FROM " .$table_prefix ."calendars
-			WHERE id = ?";
+      WHERE id = ?"
+    );
 
-		$this->statement_is_subscribed =
+    $this->statement_is_subscribed = prepare(
+      $this->db,
 			"SELECT count(*) FROM " . $table_prefix ."calendars_users
-			WHERE id_cal = ? AND id_user = ?";
+      WHERE id_cal = ? AND id_user = ?"
+    );
 
-		$this->statement_subscribed_users =
+    $this->statement_subscribed_users = prepare(
+      $this->db,
 			"SELECT u.id id, u.username username
 			FROM " . $table_prefix ."calendars_users cu, " . $table_prefix . "users u
-			WHERE cu.id_cal = ? AND u.id = cu.id_user";
+      WHERE cu.id_cal = ? AND u.id = cu.id_user"
+    );
 
-		$this->statement_subscribe_user =
-			"INSERT INTO " . $table_prefix ."calendars_users (id_cal, id_user) VALUES (?, ?)";
+    $this->statement_subscribe_user = prepare(
+      $this->db,
+      "INSERT INTO " . $table_prefix ."calendars_users (id_cal, id_user) VALUES (?, ?)"
+    );
 
-		$this->statement_delete_subscribed_users =
-			"DELETE FROM " . $table_prefix ."calendars_users WHERE id_cal = ?";
+    $this->statement_delete_subscribed_users = prepare(
+      $this->db,
+      "DELETE FROM " . $table_prefix ."calendars_users WHERE id_cal = ?"
+    );
 
-		$this->statement_active_calendar =
-			"UPDATE " . $table_prefix . "calendars SET active = !active"; /* boolean in pgsql */
+    $this->statement_active_calendar = prepare(
+      $this->db,
+      "UPDATE " . $table_prefix . "calendars SET active = !active"
+    ); /* boolean in pgsql */
 
-		$this->statement_is_active =
+    $this->statement_is_active = prepare(
+      $this->db,
 			"SELECT count(*) FROM " . $table_prefix ."calendars
-			WHERE id = ? AND active = '1'";
+      WHERE id = ? AND active = '1'"
+    );
 
-		$this->statement_get_owner =
+    $this->statement_get_owner = prepare(
+      $this->db,
 			"SELECT id_owner FROM " . $table_prefix ."calendars
-			WHERE id = ?";
+      WHERE id = ?"
+    );
 
-		$this->statement_update = 
-			"UPDATE " .  $table_prefix . "calendars SET %s WHERE id = ?";
+    $this->statement_update = prepare(
+      $this->db,
+      "UPDATE " .  $table_prefix . "calendars SET %s WHERE id = ?"
+    );
 	}
 
 	function exists() {
-		$res = $this->db->getOne($this->statement_exists, array($this->cal_nb));
-		$this->checkSql($res);
+		$res = getOne($this->statement_exists, array($this->cal_nb));
 		return ($res > 0);
 	}
 
@@ -406,10 +442,9 @@ class Calendrier {
 
 	function fetchCalendarInfo() {
 		$this->log->debug("fetchCalendarInfo()");
-		$res = $this->db->query($this->statement_fetchinfo, array($this->cal_nb));
-		$this->checkSql($res);
+		$res = query($this->statement_fetchinfo, array($this->cal_nb));
 
-		$row = $res->fetchRow();
+		$row = $res->fetch();
 		if (! $row) {
 			$this->log->debug("request failed (cal={$this->cal_nb})");
 			$this->name = '';
@@ -430,126 +465,86 @@ class Calendrier {
 
 	function writeData($data, $year, $month, $day, $user_id) {
 		$this->log->debug("writeData(data=$data, year=$year, month=$month, day=$day, user_id=$user_id)");
-		/* mysql
-		$res =& $this->db->query($this->statement_write, array($data, "$year-$month-$day", null, $user_id, $this->cal_nb));
-		$this->checkSql($res);
-
-		// FIXME à modifier plus tard
-		$event_id = mysql_insert_id($this->db->connection);
-		*/
-    /* pgsql TODO: vérifier comment utiliser pear::DB pour récupérerer l'ID, ça
-      * devrait être possible */ 
-		$result = pg_query_params($this->statement_write, array($data, "$year-$month-$day", null, $user_id, $this->cal_nb));
-		if (! $result) {
-			die ("DB Error");
-		}
-		$event_id = pg_fetch_result($result, 0, 0);
-
+		$event_id = getOne($this->statement_write, array($data, "$year-$month-$day", null, $user_id, $this->cal_nb));
 		$this->addUserToEvent($event_id, $user_id);
 
-		$this->log->debug("/writeData($data, $year, $month, $day, $user_id)");
+		$this->log->debug("/writeData($data, $year, $month, $day, $user_id) -> $event_id");
 		return $event_id;
 	}
 
 	function addUserToEvent($event_id, $user_id) {
 		$this->log->debug("addUserToEvent(event_id=$event_id, user_id=$user_id)");
-		$res = $this->db->query($this->statement_write_user, array($event_id, $user_id));
-		$this->checkSql($res);
+		$res = query($this->statement_write_user, array($event_id, $user_id));
 		$this->log->debug("/addUserToEvent($event_id, $user_id)");
 	}
 
 	function removeUserFromEvent($event_id, $user_id) {
-		$res = $this->db->query($this->statement_remove_user, array($event_id, $user_id));
-		$this->checkSql($res);
+		$res = query($this->statement_remove_user, array($event_id, $user_id));
 	}
 
 
 	function & readData($year = null, $month = null, $day = null) {
 		if ($day != null) {
-			$data = $this->db->getAll($this->statement_read,
-					array("$year-$month-$day", $this->cal_nb), DB_FETCHMODE_ASSOC);
+			$data = query($this->statement_read,
+					array("$year-$month-$day", $this->cal_nb))->fetchAll();
 		} elseif ($month != null) {
-			$data = $this->db->getAll($this->statement_read_month,
-					array($year, $month, $this->cal_nb), DB_FETCHMODE_ASSOC);
+			$data = query($this->statement_read_month,
+					array($year, $month, $this->cal_nb))->fetchAll();
 		} elseif ($year != null) {
 			return 0;
 		} else {
-			$data = $this->db->getAll($this->statement_read_all, array($this->cal_nb), DB_FETCHMODE_ASSOC);
+			$data = query($this->statement_read_all, array($this->cal_nb))->fetchAll();
 		}
-		$this->checkSql($data);
-		
 		return $data;
 	}
 
 	function & readUsersForEvent($id_event) {
-		$data = $this->db->getCol($this->statement_read_users, 0, array($id_event));
-		$this->checkSql($data);
+		$data = query($this->statement_read_users, array($id_event))->fetchAll(PDO::FETCH_COLUMN, 0);
 		return $data;
 	}
 
 	function & readDataForUserId($user_id, $year, $month) {
-		$data = $this->db->getAll($this->statement_read_foruserid,
-				array($user_id, $year, $month, $this->cal_nb), DB_FETCHMODE_ASSOC);
-		$this->checkSql($data);
-		
+		$data = query($this->statement_read_foruserid,
+				array($user_id, $year, $month, $this->cal_nb))->fetchAll();
 		return $data;
 	}
 
 	function & readAllDataForUser($user) {
-		$data = $this->db->getAll($this->statement_readall_foruser,
-				array($user, $this->cal_nb), DB_FETCHMODE_ASSOC);
-		$this->checkSql($data);
-		
+		$data = query($this->statement_readall_foruser,
+				array($user, $this->cal_nb))->fetchAll();
 		return $data;
 	}
 	
 	function modifyData($data, $id) {
-		$res = $this->db->query($this->statement_mod, array($data, $id));
-		$this->checkSql($res);
+		$res = query($this->statement_mod, array($data, $id));
 	}
 
 	function deleteData($id) {
-		$res = $this->db->query($this->statement_del, array($id));
-		$this->checkSql($res);
-		$res = $this->db->query($this->statement_del_users, array($id));
-		$this->checkSql($res);
-	}
-
-	function checkSql(&$res) {
-		if (PEAR::isError($res)) {
-			die($res->getMessage());
-		}
+		$res = query($this->statement_del, array($id));
+		$res = query($this->statement_del_users, array($id));
 	}
 
 	function & getUsersForEvent($id) {
-		$res = $this->db->getAll($this->statement_users, array($id));
-		$this->checkSql($res);
-		
+		$res = query($this->statement_users, array($id))->fetchAll();
 		return $res;
 	}
 
 	function & getLastEntries($minnumber = 10, $delay = 5) {
-		$res = $this->db->getAll($this->statement_rss1, array($this->cal_nb, $delay), DB_FETCHMODE_ASSOC);
-		$this->checkSql($res);
+		$res = query($this->statement_rss1, array($this->cal_nb, $delay))->fetchAll();
 		if (count($res) >= $minnumber) {
 			return $res;
 		}
 
-		$res = $this->db->getAll($this->statement_rss2, array($this->cal_nb, $minnumber), DB_FETCHMODE_ASSOC);
-		$this->checkSql($res);
+		$res = query($this->statement_rss2, array($this->cal_nb, $minnumber))->fetchAll();
 		return $res;
 	}
 
 	function & getNextEntries($minnumber = 10) {
-		$res = $this->db->getAll($this->statement_rss_next, array($this->cal_nb, $minnumber), DB_FETCHMODE_ASSOC);
-		$this->checkSql($res);
-
+		$res = query($this->statement_rss_next, array($this->cal_nb, $minnumber))->fetchAll();
 		return $res;
 	}
 	function & getNextEntriesForUser($user, $minnumber = 10) {
-		$res = $this->db->getAll($this->statement_rss_next_for_user, array($user, $minnumber), DB_FETCHMODE_ASSOC);
-		$this->checkSql($res);
-
+		$res = query($this->statement_rss_next_for_user, array($user, $minnumber))->fetchAll();
 		return $res;
 	}
 
@@ -561,37 +556,29 @@ class Calendrier {
 			$where_clause .= " AND event LIKE " . pg_escape_literal("%$key%");
 		}
 		
-		$statement = sprintf($this->statement_search, $where_clause);
-
-		$res = $this->db->getOne($statement, array($this->cal_nb));
-		$this->checkSql($res);
-
+		$sql = sprintf($this->statement_search, $where_clause);
+    $statement = prepare($this->db, $sql);
+		$res = getOne($statement, array($this->cal_nb));
 		return $res;
 	}
 
 	function isSubscribedUser($id_user) {
-		$res = $this->db->getOne($this->statement_is_subscribed, array($this->cal_nb, $id_user));
-		$this->checkSql($res);
+		$res = getOne($this->statement_is_subscribed, array($this->cal_nb, $id_user));
 		return ($res > 0);
 	}
 
 	function toggleActive() {
-		$res = $this->db->query($this->statement_active_calendar);
-		$this->checkSql($res);
+		$res = query($this->statement_active_calendar);
 	}
 
 	function isActive() {
-		$res = $this->db->getOne($this->statement_is_active, $this->cal_nb);
-		$this->checkSql($res);
-
-		return ($res > 0);	
+		$res = getOne($this->statement_is_active, [$this->cal_nb]);
+		return ($res > 0);
 	}
 
 	function getOwner() {
 		if (! isset($this->id_owner)) {
-			$res = $this->db->getOne($this->statement_get_owner, $this->cal_nb);
-			$this->checkSql($res);
-
+			$res = getOne($this->statement_get_owner, [$this->cal_nb]);
 			$this->id_owner = $res;
 		}
 
@@ -614,12 +601,10 @@ class Calendrier {
 		}
 
 		$where_statement = substr($where_statement, 0, -2);
-		$statement = sprintf($this->statement_update, $where_statement);
+		$sql = sprintf($this->statement_update, $where_statement);
 		$values[] = $this->cal_nb;
-
-		$res = $this->db->query($statement, $values);
-		$this->checkSql($res);
-
+    $statement = prepare($this->db, $sql);
+		$res = query($statement, $values);
 		$this->delayedWrite = false;
 	}
 
@@ -629,9 +614,9 @@ class Calendrier {
 		if ($this->delayedWrite) {
 			$this->updatedFields[] = array('field' => 'name', 'value' => $name);
 		} else {
-			$statement = sprintf($this->statement_update, "name = ?");
-			$res = $this->db->query($statement, array($name, $this->cal_nb));
-			$this->checkSql($res);
+			$sql = sprintf($this->statement_update, "name = ?");
+      $statement = prepare($this->db, $sql);
+			$res = query($statement, array($name, $this->cal_nb));
 		}
 		$this->log->debug("/setName");
 	}
@@ -645,11 +630,11 @@ class Calendrier {
 			$this->updatedFields[] = array('field' => 'rights_subscribed', 'value' => $rights[1]);
 			$this->updatedFields[] = array('field' => 'rights_guests', 'value' => $rights[2]);
 		} else {
-			$statement = sprintf($this->statement_update, "rights_users = ?, rights_subscribed = ?, rights_guests = ?");
+			$sql = sprintf($this->statement_update, "rights_users = ?, rights_subscribed = ?, rights_guests = ?");
 			$values = $rights;
 			array_push($values, $this->cal_nb);
-			$res = $this->db->query($statement, $values);
-			$this->checkSql($res);
+      $statement = prepare($this->db, $sql);
+			$res = query($statement, $values);
 		}
 
 		$this->log->debug("/setRights");
@@ -664,11 +649,11 @@ class Calendrier {
 			$this->updatedFields[] = array('field' => 'rss_next', 'value' => $rss_titles[1]);
 			$this->updatedFields[] = array('field' => 'rss_next_user', 'value' => $rss_titles[2]);
 		} else {
-			$statement = sprintf($this->statement_update, "rss_last = ?, rss_next = ?, rss_next_user = ?");
+			$sql = sprintf($this->statement_update, "rss_last = ?, rss_next = ?, rss_next_user = ?");
 			$values = $rss_titles;
 			array_push($values, $this->cal_nb);
-			$res = $this->db->query($statement, $values);
-			$this->checkSql($res);
+      $statement = prepare($this->db, $sql);
+			$res = query($statement, $values);
 		}
 		$this->log->debug("/setRssTitles");
 	}
@@ -678,29 +663,24 @@ class Calendrier {
 		if ($this->delayedWrite) {
 			$this->updatedFields[] = array('field' => 'new_event_label', 'value' => $label);
 		} else {
-			$statement = sprintf($this->statement_update, "new_event_label = ?");
-			$res = $this->db->query($statement, $label);
-			$this->checkSql($res);
+			$sql = sprintf($this->statement_update, "new_event_label = ?");
+      $statement = prepare($this->db, $sql);
+			$res = query($statement, [$label]);
 		}
 	}
 
 	function &getSubscribedUsers() {
-		$res = $this->db->getAll($this->statement_subscribed_users, array($this->cal_nb), DB_FETCHMODE_ASSOC);
-		$this->checkSql($res);
+		$res = query($this->statement_subscribed_users, array($this->cal_nb))->fetchAll();
 
 		return $res;
 	}
 
 	function setSubscribedUsers(&$users) {
-		$res = $this->db->query($this->statement_delete_subscribed_users, $this->cal_nb);
-		$this->checkSql($res);
+		$res = query($this->statement_delete_subscribed_users, [$this->cal_nb]);
 
-		$sth = $this->db->prepare($this->statement_subscribe_user);
-		$this->checkSql($sth);
-
+		$sth = prepare($this->db, $this->statement_subscribe_user);
 		foreach ($users as $uid) {
-			$res = $this->db->execute($sth, array($this->cal_nb, $uid));
-			$this->checkSql($res);
+			$res = query($sth, array($this->cal_nb, $uid));
 		}
 	}
 
