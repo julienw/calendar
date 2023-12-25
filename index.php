@@ -45,12 +45,12 @@ $db = new PDO($dsn, null, null, array(
 ));
 
 $log = new MyLog($db, 'index');
-$log->debug("Entrée dans index");
+$log->debug("EntrÃ©e dans index");
 
-/* vérification de l'authentification */
+/* vÃ©rification de l'authentification */
 $auth = new Auth($db);
 
-/* instanciation des routines d'accès au calendrier */
+/* instanciation des routines d'accÃ¨s au calendrier */
 $cal = 0;
 if (isset($_GET['cal'])) {
 	$cal = htmlspecialchars($_GET['cal'], ENT_QUOTES);
@@ -76,8 +76,8 @@ if ($auth->check()) {
 	$rss[htmlspecialchars($rss_titles[2], ENT_QUOTES)] = 'rss.php?next&amp;user=' .  htmlspecialchars($auth->getUsername()) . '&amp;cal=' . $cal ;
 }
 
-/* récupération du mois à afficher */
-/* (TODO : récupérer avec un path_info) */
+/* rÃ©cupÃ©ration du mois Ã  afficher */
+/* (TODO : rÃ©cupÃ©rer avec un path_info) */
 foreach ($_GET as $key => $value) {
 	if (strpos($key, '/') !== false) {
 		$path_infos = explode('/', $key);
@@ -89,15 +89,15 @@ foreach ($_GET as $key => $value) {
 	}
 }
 
-/* $path_infos est un tableau de 2 éléments : 1er = annee, 2e = mois */
+/* $path_infos est un tableau de 2 Ã©lÃ©ments : 1er = annee, 2e = mois */
 if (isset($path_infos) && count($path_infos) > 0) {
 	$year = $path_infos[0];
 
-	/* année incorrecte */
+	/* annÃ©e incorrecte */
 	if (! is_numeric($year)) unset($year);
 	if ($year < 1980 || $year > 2500) unset($year);
 
-	/* si le mois est spécifié, on l'utilise */
+	/* si le mois est spÃ©cifiÃ©, on l'utilise */
 	if (count($path_infos) > 1) {
 		$month = $path_infos[1];
 		
@@ -113,7 +113,7 @@ if (isset($path_infos) && count($path_infos) > 0) {
 		}
 	}
 
-	/* si le mois n'est pas spécifié, ou si le mois était incorrect,
+	/* si le mois n'est pas spÃ©cifiÃ©, ou si le mois Ã©tait incorrect,
 	   on prend le mois de janvier */
 	if (! isset($month)) {
 		$month = 1;
@@ -125,9 +125,9 @@ $thisYear = date('Y');
 $thisMonth = date('n');
 $thisDay = date('j');
 
-/* si l'année n'est pas spécifiée, c'est à dire :
-   - soit il n'y a pas d'info de date passée en argument
-   - soit ce qui est passé en argument etait invalide
+/* si l'annÃ©e n'est pas spÃ©cifiÃ©e, c'est Ã  dire :
+   - soit il n'y a pas d'info de date passÃ©e en argument
+   - soit ce qui est passÃ© en argument etait invalide
    alors on utilise le mois actuel */
 if (! isset($year)) {
 	$year = $thisYear; 
@@ -143,11 +143,11 @@ if (isset($_GET['debug'])) {
 $login_page = "login.php?" . $_SERVER['QUERY_STRING'];
 $logout_page = "login.php?logout&amp;" . $_SERVER['QUERY_STRING'];
 
-/* instanciation du mois correspondant, et création des jours */
+/* instanciation du mois correspondant, et crÃ©ation des jours */
 $Month = new Calendar_Month_Weekdays($year, $month);
 $Month->build();
 
-/* classe utilitaire de génération des liens */
+/* classe utilitaire de gÃ©nÃ©ration des liens */
 $Uri = new Calendar_Util_Uri('year', 'month');
 $Uri->separator = '/';
 $Uri->scalar = true;
@@ -155,7 +155,7 @@ $Uri->scalar = true;
 /* classe utilitaire d'affichage du mois en toutes lettres */
 $Textual = new Calendar_Util_Textual();
 
-/* unicode à cause de mysql 4 */
+/* unicode Ã  cause de mysql 4 */
 header('Content-Type: text/html; charset=utf-8');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -163,7 +163,7 @@ header('Content-Type: text/html; charset=utf-8');
 <html>
 <head>
 <title><?php echo $calendrier->getName() ?></title>
-<?php /* unicode à cause de mysql 4 */ ?>
+<?php /* unicode Ã  cause de mysql 4 */ ?>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="initial-scale=1"/>
 <?php
@@ -326,7 +326,7 @@ print $year;
 </div>
 <?php
 if (! $cal_auth->checkRead()) {
-	echo '<h2>Accès interdit au calendrier ' . $calendrier->getName() .'</h2>';
+	echo '<h2>AccÃ¨s interdit au calendrier ' . $calendrier->getName() .'</h2>';
 } else {
 ?>
 <!-- tableau du calendrier -->
