@@ -47,10 +47,10 @@ class Node_Writer {
 		}
 
 		$first_child = "var$count";
-		while (list($parent_var, $node) = array_pop($pile)) {
+		while (list($parent_var, $node) = array_shift($pile)) {
 			$node_var = "var$count";
-			$str .= "  var $node_var = document.createElement('" . $node->name . "');\n";
-			foreach ($node->attributes as $name => $value) {
+			$str .= "  var $node_var = document.createElement('" . $node->getName() . "');\n";
+			foreach ($node->attributes() as $name => $value) {
 				$value = $this->replace_variables_to_javascript($value);
 				$str .= "  $node_var.setAttribute('$name', '$value');\n";
 				if ($name == 'class') {
@@ -58,14 +58,15 @@ class Node_Writer {
 				}
 			}
 			
-			if (!empty($node->content)) {
+      $content = (string) $node;
+      $content = preg_replace('/\s+/', ' ', $content);
+			if ($content) {
 				// TODO : enlever les entities
-				$content = $node->content;
 				$content = $this->replace_variables_to_javascript($content);
 				$str .= "  $node_var.appendChild(document.createTextNode('" . $content . "'));\n";
 			}
 			
-			foreach (array_reverse($node->children) as $child) {
+			foreach ($node->children() as $child) {
 				$pile[] = array($node_var, $child);
 			}
 
@@ -96,7 +97,7 @@ class Node_Writer {
   function get_as_html($id, $horaire, $data, $users, $class, $action, $date) {
     $str = '';
 		foreach ($this->nodes as $node) {
-			$xml = $node->get();
+			$xml = $node->asXML();
 			$xml = str_replace(
 					array('__ID__', '__HORAIRE__', '__DATA__', '__USERS__', '__MYCLASS__', '__TOGGLEACTION__', '__DATE__'),
 					array($id, $horaire, $data, $users, $class, $action, $date),

@@ -42,7 +42,7 @@ class Event_Writer {
 		$this->empty = new Event_TextEmpty_Writer();
 	}
 
-	function &getInstance() {
+	static function &getInstance() {
 		static $instance = null;
 		if ($instance == null) {
 			$instance = new Event_Writer();

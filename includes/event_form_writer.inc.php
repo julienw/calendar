@@ -27,37 +27,29 @@
    l'événément.
  */
 
-require_once('XML/Tree.php');
 require_once('node_writer.inc.php');
 
 class Event_Form_Writer extends Node_Writer {
 
 	function __construct() {
-
-		/* partie formulaire */
-		$form = new XML_Tree_Node('form');
-		$form->setAttribute('action', 'actions.php');
-		$form->setAttribute('id', 'form__ID__');
-		$form->setAttribute('class', 'event');
-		$form->setAttribute('onsubmit', 'submitOneForm(__ID__); return false');
-
-		/* zone d'input */
-		$input = new XML_Tree_Node('input');
-		$input->setAttribute('type', 'text');
-		$input->setAttribute('id', 'input__ID__');
-		$input->setAttribute('name', 'input__ID__');
-		$input->setAttribute('value', '__DATA__');
-		$input->setAttribute('onclick', 'dontPropagate(event); return true');
-		
-		$hidden = new XML_Tree_Node('input');
-		$hidden->setAttribute('type', 'hidden');
-		$hidden->setAttribute('name', 'id');
-		$hidden->setAttribute('value', '__ID__');
-		
-		$form->addChild($input);
-		$form->addChild($hidden);
+    $str = <<<'XML'
+      <form
+        action='actions.php'
+        id='form__ID__'
+        class='event'
+        onsubmit='submitOneForm(__ID__); return false'
+      >
+        <input
+          type='text'
+          id='input__ID__'
+          name='input__ID__'
+          value='__DATA__'
+          onclick='dontPropagate(event); return true' />
+        <input type='hidden' name='id' value='__ID__' />
+      </form>
+      XML;
+    $form = new SimpleXMLElement($str);
 		$this->nodes[] = $form;
-		
 	}
 }
 ?>

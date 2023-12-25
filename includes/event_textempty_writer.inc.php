@@ -27,23 +27,19 @@
    événement d'une case vide.
  */
 
-require_once('XML/Tree.php');
 require_once('node_writer.inc.php');
 
 class Event_TextEmpty_Writer extends Node_Writer {
 
 	function __construct() {
-		$div = new XML_Tree_Node('div');
-		$div->setAttribute('class', 'event vevent');
+    $str = <<<'XML'
+      <div class='event vevent'>
+        <dd>[__USERS__]</dd>
+        <dd class='summary'>__DATA__</dd>
+      </div>
+      XML;
 
-		/* 'dd' de l'événement : intitulé */
-		$users = new XML_Tree_Node('dd', '[__USERS__]');
-		$data = new XML_Tree_Node('dd', '__DATA__');
-		$data->setAttribute('class', 'summary');
-
-		$div->addChild($users);
-		$div->addChild($data);
-		
+    $div = new SimpleXMLElement($str);
 		$this->nodes[] = $div;
 	}
 }

@@ -91,8 +91,10 @@ class Event extends Calendar_Decorator {
 			$str .=">";
 
 			/* affichage de tous les événéments */
-			while ($event = $this->thisEvent()) {
-				$str .= $event;
+			foreach ($this->events as $event) {
+        $event['users'] = $this->calendrier->readUsersForEvent($event['id']);
+        /* création du code html proprement dit */
+        $str .= $this->writeEvent($event);
 			}
 			$str .= "</dl></dd>\n";
 
@@ -124,17 +126,6 @@ class Event extends Calendar_Decorator {
 		reset($this->events);
 	}
 	
-	/* affichage d'un élément à chaque appel */
-	function thisEvent() {
-		$tuple = each($this->events);
-		if ($tuple === false) return false;
-
-		$tuple = $tuple['value'];
-		$tuple['users'] = $this->calendrier->readUsersForEvent($tuple['id']);
-		/* création du code html proprement dit */
-		return $this->writeEvent($tuple);
-	}
-
 	/* écriture d'un événement */
 	/* en argument : un tableau associatif avec les clés correspondant
 	   aux champs sql : event, horaire, id */
