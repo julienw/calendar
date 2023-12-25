@@ -33,12 +33,9 @@ require_once 'includes/calendrier.inc.php';
 require_once 'includes/calendrier_soap.inc.php';
 require_once 'SOAP/Server.php';
 
-require_once 'DB.php';
-
-$db =& DB::connect($dsn);
-if (PEAR::isError($db)) {
-	die($db->getMessage());
-}
+$db = new PDO($dsn, null, null, array(
+  PDO::ATTR_PERSISTENT => true
+));
 
 $calendrier = new Calendrier($db);
 

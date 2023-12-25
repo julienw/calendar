@@ -40,12 +40,9 @@ require_once('includes/calendar_auth.inc.php');
 // log
 require_once('includes/my_log.inc.php');
 
-require_once 'DB.php';
-
-$db = DB::connect($dsn);
-if (PEAR::isError($db)) {
-	die($db->getMessage());
-}
+$db = new PDO($dsn, null, null, array(
+  PDO::ATTR_PERSISTENT => true
+));
 
 $log = new MyLog($db, 'calendar_server');
 $log->debug("Entrée dans calendar_server");

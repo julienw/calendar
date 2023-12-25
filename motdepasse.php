@@ -31,7 +31,6 @@ require_once 'conf/config.inc.php';
 // auth
 require_once('includes/auth.inc.php');
 
-require_once 'DB.php';
 require_once "Text/Password.php";
 require_once "Mail.php";
 
@@ -91,10 +90,9 @@ function checkEmail($email) {
 	return $username;
 }
 
-$db = DB::connect($dsn);
-if (PEAR::isError($db)) {
-	die($db->getMessage());
-}
+$db = new PDO($dsn, null, null, array(
+  PDO::ATTR_PERSISTENT => true
+));
 
 $auth = new Auth($db);
 ?>

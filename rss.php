@@ -18,7 +18,6 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-require_once('DB.php');
 require_once('includes/calendrier.inc.php');
 
 require_once 'conf/config.inc.php';
@@ -60,10 +59,9 @@ function createMissingFieds(&$value, $key) {
 }
 
 /* connexion à la db */
-$db = DB::connect($dsn);
-if (PEAR::isError($db)) {
-	die($db->getMessage());
-}
+$db = new PDO($dsn, null, null, array(
+  PDO::ATTR_PERSISTENT => true
+));
 
 /* instanciation des routines d'accès au calendrier */
 if (isset($_GET['cal'])) {

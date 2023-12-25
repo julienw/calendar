@@ -33,7 +33,6 @@ require_once 'includes/my_log.inc.php';
 
 // auth
 require_once('includes/auth.inc.php');
-require_once 'DB.php';
 
 function print_rights_select($title, $arr_name = 'rights', $selected = -1) {
 	$arr_name = htmlspecialchars($arr_name, ENT_QUOTES);
@@ -249,10 +248,9 @@ $titles_form_rss = array(
 		);
 
 /* connexion sql */
-$db = DB::connect($dsn);
-if (PEAR::isError($db)) {
-	die($db->getMessage());
-}
+$db = new PDO($dsn, null, null, array(
+  PDO::ATTR_PERSISTENT => true
+));
 
 /* log */
 $log = new MyLog($db, 'calendar_create.php');

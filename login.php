@@ -2,12 +2,10 @@
 
 require_once 'conf/config.inc.php';
 require_once 'includes/auth.inc.php';
-require_once 'DB.php';
 
-$db = DB::connect($dsn);
-if (PEAR::isError($db)) {
-	die($db->getMessage());
-}
+$db = new PDO($dsn, null, null, array(
+  PDO::ATTR_PERSISTENT => true
+));
 
 $querystring = str_replace('logout&', '', $_SERVER['QUERY_STRING']);
 $location = $site_url . '?' . $querystring;

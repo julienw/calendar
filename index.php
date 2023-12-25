@@ -32,7 +32,6 @@ require_once 'includes/event_writer.inc.php';
 require_once('includes/calendrier.inc.php');
 require_once('includes/auth.inc.php');
 require_once('includes/calendar_auth.inc.php');
-require_once('DB.php');
 require_once 'includes/my_log.inc.php';
 
 require_once 'conf/config.inc.php';
@@ -40,11 +39,10 @@ require_once 'conf/config.inc.php';
 /* pour les noms des mois (TODO : rendre configurable) */
 setlocale(LC_TIME, 'fr_FR');
 
-/* connexion à la db */
-$db = DB::connect($dsn);
-if (PEAR::isError($db)) {
-	die($db->getMessage());
-}
+
+$db = new PDO($dsn, null, null, array(
+  PDO::ATTR_PERSISTENT => true
+));
 
 $log = new MyLog($db, 'index');
 $log->debug("Entrée dans index");

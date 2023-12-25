@@ -23,7 +23,6 @@
    22 sept 2005
    */
 
-require_once('DB.php');
 require_once('includes/calendrier.inc.php');
 
 require_once 'conf/config.inc.php';
@@ -31,10 +30,9 @@ require_once 'includes/auth.inc.php';
 require_once 'includes/calendar_auth.inc.php';
 
 /* connexion à la db */
-$db =& DB::connect($dsn);
-if (PEAR::isError($db)) {
-	    die($db->getMessage());
-}
+$db = new PDO($dsn, null, null, array(
+  PDO::ATTR_PERSISTENT => true
+));
 
 /* instanciation des routines d'accès au calendrier */
 if (isset($_GET['cal'])) {

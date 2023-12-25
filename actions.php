@@ -36,8 +36,6 @@ require_once('includes/calendrier_xmlrpc.inc.php');
 require_once('includes/auth.inc.php');
 require_once('includes/calendar_auth.inc.php');
 
-require_once 'DB.php';
-
 $parameters = array('id', 'data', 'day', 'action');
 
 function redirect() {
@@ -73,10 +71,9 @@ function extractData($id) {
 	return $_GET['input' . $id];
 }
 
-$db = DB::connect($dsn);
-if (PEAR::isError($db)) {
-	die($db->getMessage());
-}
+$db = new PDO($dsn, null, null, array(
+  PDO::ATTR_PERSISTENT => true
+));
 
 /* instanciation du calendrier */
 $cal = 0;
