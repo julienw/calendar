@@ -83,7 +83,7 @@ class Calendar_Engine_Factory
      * @return object instance of a calendar calculation engine
      * @access protected
      */
-    function & getEngine()
+    static function & getEngine()
     {
         static $engine = false;
         switch (CALENDAR_ENGINE) {
@@ -203,7 +203,7 @@ class Calendar
      *
      * @access protected
      */
-    function Calendar($y = 2000, $m = 1, $d = 1, $h = 0, $i = 0, $s = 0)
+    function __construct($y = 2000, $m = 1, $d = 1, $h = 0, $i = 0, $s = 0)
     {
         static $cE = null;
         if (!isset($cE)) {

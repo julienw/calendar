@@ -333,7 +333,7 @@ if (! $cal_auth->checkRead()) {
 <table id='calendrier'>
 
 <?php
-while ($curDay = $Month->fetch()) {
+foreach($Month->fetchAll() as $curDay) {
 	echo "\n<!-- we're at : " . $curDay->thisDay() . "/" . $curDay->thisMonth() . "/" .  $curDay->thisYear() . " -->\n";
 	if ((isset($day)
 		&& $curDay->thisDay() == $day
