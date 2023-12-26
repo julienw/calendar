@@ -6,7 +6,7 @@
    (de toute manière, c'est pas bien formidable ;)
  */
 
-@import "banner.php";
+@import "header.css.php";
 
 td.empty {
 	background-color: #ffffa0;
