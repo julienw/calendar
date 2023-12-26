@@ -179,7 +179,7 @@ if ($cal_auth->checkWrite()) {
 ?>
 <script type='text/javascript' src='calendar_server.php?client=all&amp;cal=<?php echo $cal ?>'></script>
 <script type='text/javascript' src='calendar_server.php?stub=all&amp;cal=<?php echo $cal ?>'></script>
-<script type='text/javascript' src='js/behaviour.php'></script>
+<script type='text/javascript' src='js/behaviour.js.php'></script>
 <script type='text/javascript' language='JavaScript'>
 <!--
 /* initialisations */
