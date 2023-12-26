@@ -276,7 +276,13 @@ HTML;
 	echo "</ul></li>\n";
 } else {
 	echo <<<HTML
-	<li><a href='$login_page'>Connexion</a></li>
+  <li>
+    <form action="$login_page" method="post" class="login-form">
+      <label class="login-user-label">Identifiant&nbsp;: <input name="loginuser"></label>
+      <label class="login-password-label">Mot de passe&nbsp;: <input name="loginpassword" type="password"></label>
+      <input class="login-submit" type='submit' value="S'identifier" />
+    </form>
+  </li>
 	<li><a href='motdepasse.php'>Mot de passe oubli&eacute;</a></li>
 	<li><a href='ical.php?cal=$cal'>Export iCal</a></li>
 HTML;
@@ -365,7 +371,5 @@ foreach($Month->fetchAll() as $curDay) {
 <?php
 } /* else (checkRead) */
 ?>
-<div id='motdepasse' class='popup'>
-</div>
 </body>
 </html>

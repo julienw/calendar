@@ -12,10 +12,20 @@ $querystring = str_replace('logout&', '', $_SERVER['QUERY_STRING']);
 $location = $site_url . '?' . $querystring;
 
 $auth = new Auth($db);
-if ((! $auth->check()) or (isset($_GET['logout']))) {
-	$auth->sendAuthRequest();
-	echo "<html><head><meta http-equiv='refresh' content='0;URL=$location' /></head></html>\n";
-	exit;
+if (isset($_GET['logout'])) {
+  $auth->logout();
+} else if (!$auth->check()) {
+  http_response_code(403);
+  echo <<<HTML
+    <!doctype html>
+    <html>
+      <body>
+        <p>Login incorrect.</p>
+        <p><a href="$location">Retourner à l'accueil</a></p>
+      </body>
+    </html>
+    HTML;
+  exit;
 }
 
 header('Location: ' . $location);

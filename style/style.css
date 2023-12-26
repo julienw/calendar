@@ -319,3 +319,16 @@ html > body .full form.new input:focus {
 	visibility: visible;
 }
 
+.login-form label {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.login-form label input {
+  width: 12em;
+}
+
+.login-submit {
+  margin-left: auto;
+}

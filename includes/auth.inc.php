@@ -72,6 +72,26 @@ class Auth {
 		return $this->result;
 	}
 
+  function logout() {
+    $this->log->debug("logout()");
+    $this->getCredentials();
+    switch($this->type) {
+      case 'PHP':
+        this->sendAuthRequest();
+        break;
+      case 'FORM':
+      case 'SESSION':
+        session_regenerate_id();
+        $_SESSION["user"] = null;
+        break;
+      case 'EXTERN':
+        /* can"t do anything */
+      default:
+    }
+    $this->result = null;
+    $this->log->debug("/logout()");
+  }
+
 	function getCredentials() {
 		$this->log->debug("getCredentials()");
 
@@ -127,11 +147,11 @@ class Auth {
 		$this->log->debug("/fetchId() -> got id={$this->id}");
     return true;
 	}
-	
-	function sendAuthRequest() {
-		header('WWW-Authenticate: Basic realm="Calendrier"');
-		header('HTTP/1.0 401 Unauthorized');
-	}
+
+  function sendAuthRequest() {
+    header('WWW-Authenticate: Basic realm="Calendrier"');
+    header('HTTP/1.0 401 Unauthorized');
+  }
 
 	function getId() {
 		return $this->id;
