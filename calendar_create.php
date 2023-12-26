@@ -26,6 +26,7 @@
    Formulaire d'ajout d'un calendrier
  */
 
+require_once 'includes/setup.php';
 require_once 'conf/config.inc.php';
 require_once 'includes/calendrier.inc.php';
 /* log */

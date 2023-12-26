@@ -28,6 +28,7 @@
 
  */
 
+require_once 'includes/setup.php';
 // conf
 require_once 'conf/config.inc.php';
 

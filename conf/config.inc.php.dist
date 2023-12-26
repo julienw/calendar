@@ -14,8 +14,6 @@ $site_url = "http://www.everlong.org/calendrier/";
 $from_mail = "flash@everlong.org";
 $replyto_mail = "felash@gmail.com";
 
-set_include_path(__DIR__ . '/../includes/pear/:' . get_include_path());
-
 # Si le serveur web est derrière un proxy
 # $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_HOST'] =
 

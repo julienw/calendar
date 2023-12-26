@@ -26,6 +26,7 @@
    Changement de mot de passe lorsqu'il n'y a pas de JS
  */
 
+require_once 'includes/setup.php';
 require_once 'conf/config.inc.php';
 
 // auth

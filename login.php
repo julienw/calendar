@@ -1,5 +1,6 @@
 <?php
 
+require_once 'includes/setup.php';
 require_once 'conf/config.inc.php';
 require_once 'includes/auth.inc.php';
 

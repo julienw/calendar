@@ -26,6 +26,7 @@
    Actions sur le calendrier lorsqu'il n'y a pas de Javascript
  */
 
+require_once 'includes/setup.php';
 // conf
 require_once 'conf/config.inc.php';
 
