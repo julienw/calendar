@@ -31,63 +31,46 @@ require_once 'conf/config.inc.php';
 
 // auth
 require_once('includes/auth.inc.php');
+require_once 'includes/db_utils.inc.php';
 
 require_once "Text/Password.php";
 require_once "Mail.php";
 
 function checkUsernameAndEmail($username, $email) {
 	global $db, $table_prefix;
-	$count = $db->getOne("SELECT count(id) FROM " . $table_prefix . "users WHERE username = ? AND email = ?", array($username, $email));
-	if (PEAR::isError($count)) {
-		die($count->getMessage());
-	}
-
+  $sql = "SELECT count(id) FROM " . $table_prefix . "users WHERE username = ? AND email = ?" ;
+  $statement = prepare($db, $sql);
+	$count = getOne($statement, array($username, $email));
 	return ($count > 0);
 }
 
 function checkUsernameAndPassword($username, $password) {
 	global $db, $table_prefix;
 
-	$count = $db->getOne("SELECT count(id) FROM " . $table_prefix . "users WHERE username = ? AND passwd = ?",
-			array($username, sha1($password)));
-
-	if (PEAR::isError($count)) {
-		die($count->getMessage());
-	}
-
+  $sql = "SELECT count(id) FROM " . $table_prefix . "users WHERE username = ? AND passwd = ?";
+  $statement = prepare($db, $sql);
+	$count = getOne($statement, array($username, sha1($password)));
 	return ($count > 0);
 }
 
 function changePassword($username, $password) {
 	global $db, $table_prefix;
 
-	$result = $db->query("UPDATE " . $table_prefix . "users SET passwd = ? WHERE username = ?",
-			array(sha1($password), $username));
-
-	if (PEAR::isError($result)) {
-		die($result->getMessage());
-	}
+  $statement = prepare($db, "UPDATE " . $table_prefix . "users SET passwd = ? WHERE username = ?");
+	$res = query($statement, array(sha1($password), $username));
 }
 
 function checkUsername($username) {
 	global $db, $table_prefix;
-	$email = $db->getOne("SELECT email FROM " . $table_prefix . "users WHERE username = ?", $username);
-
-	if (PEAR::isError($email)) {
-		die($email->getMessage());
-	}
-
+  $statement = prepare($db, "SELECT email FROM " . $table_prefix . "users WHERE username = ?");
+	$email = getOne($statement, [$username]);
 	return $email;
 }
 
 function checkEmail($email) {
 	global $db, $table_prefix;
-	$username= $db->getOne("SELECT username FROM " . $table_prefix . "users WHERE email = ?", $email);
-
-	if (PEAR::isError($username)) {
-		die($username->getMessage());
-	}
-
+  $statement = prepare($db, "SELECT username FROM " . $table_prefix . "users WHERE email = ?");
+	$username = getOne($statement, [$email]);
 	return $username;
 }
 
@@ -128,7 +111,7 @@ if ($auth->check()) {
 			changePassword($username, $newpassword);
 
 			echo "<p>Votre mot de passe a bien été changé.</p>\n";
-			echo "<p>Il faut <a href='login.php'>vous connecter à nouveau</a>.</p>\n";
+			echo "<p>Il faut peut-être <a href='login.php'>vous connecter à nouveau</a>.</p>\n";
 			$show_form = false;
 		}
 	}
@@ -166,11 +149,8 @@ HTML;
 	if (isset($_GET['confirm']) && ! empty($_GET['confirm'])) {
 		$confirm = true;
 		// verif du cookie de confirmation
-		$result = $db->getRow("SELECT username, email FROM " . $table_prefix .
-				"users WHERE confirmcookie = ?", array($_GET['confirm']), DB_FETCHMODE_ASSOC);
-		if (PEAR::isError($result)) {
-			die($result->getMessage());
-		}
+    $statement = prepare($db, "SELECT username, email FROM {$table_prefix}users WHERE confirmcookie = ?");
+    $result = query($statement, array($_GET['confirm']))->fetch();
 
 		if (empty($result)) {
 			$error = "Désolé, le code de confirmation n'a pas été trouvé dans la base.";
@@ -208,6 +188,7 @@ HTML;
 		if (isset($thisusername) && !empty($thisusername)) {
 			$username = $thisusername;
 			$email = $_POST['email'];
+      $show_form = false;
 		} else {
 			$error = "L'adresse de courrier électronique (" . htmlspecialchars($_POST['email'], ENT_QUOTES) . ")
 				n'a pas été trouvée dans la base de données.";
@@ -226,10 +207,10 @@ HTML;
 essaierons de trouver une correspondance dans notre base de données, et vous enverrons ensuite un mail de
 confirmation.</p>
 <label>Nom d'utilisateur
-<input name='username' id='username' type='text' value='<?php echo htmlspecialchars($_POST['username'], ENT_QUOTES)?>' />
+<input name='username' id='username' type='text' value='<?php echo htmlspecialchars($_POST['username'] ?? "", ENT_QUOTES)?>' />
 </label>
 <label>Courrier électronique
-<input name='email' id='email' type='text' value='<?php echo htmlspecialchars($_POST['email'], ENT_QUOTES)?>'/>
+<input name='email' id='email' type='text' value='<?php echo htmlspecialchars($_POST['email'] ?? "", ENT_QUOTES)?>'/>
 </label>
 <input type='submit'/>
 </fieldset>
@@ -239,10 +220,8 @@ confirmation.</p>
 		$confirmcookie = Text_Password::create(20, 'unpronounceable', 'alphanumeric');
 		// base de donnees
 
-		$result = $db->query("UPDATE " . $table_prefix . "users SET confirmcookie = ? WHERE username = ?", array($confirmcookie, $username));
-		if (PEAR::isError($result)) {
-			die($result->getMessage());
-		}
+    $statement = prepare($db, "UPDATE " . $table_prefix . "users SET confirmcookie = ? WHERE username = ?");
+		$result = query($statement, array($confirmcookie, $username));
 
 		// envoi de mail
 		$mail = Mail::factory('mail');
@@ -264,14 +243,8 @@ confirmation.</p>
 		$password = Text_Password::create();
 
 		// Modification de la base
-		$result = $db->query(
-				"UPDATE " . $table_prefix . "users SET passwd = ?, confirmcookie = NULL
-				WHERE username = ?",
-				array(sha1($password), $username));
-
-		if (PEAR::isError($result)) {
-			die($result->getMessage());
-		}
+    $statement = prepare($db, "UPDATE {$table_prefix}users SET passwd = ?, confirmcookie = NULL WHERE username = ?");
+		$result = query($statement, array(sha1($password), $username));
 
 		// envoi de mail
 		$mail = Mail::factory('mail');
