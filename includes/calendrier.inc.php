@@ -285,7 +285,7 @@ class Calendrier {
 			extract(epoch from c.submit_timestamp) timestamp, u.username username
 			FROM " . $table_prefix . "events c, " . $table_prefix . "users u
 			WHERE c.id_submitter = u.id AND c.id_cal = ?
-			ORDER BY c.submit_timestamp DESC
+			ORDER BY timestamp DESC
       LIMIT ?"
     );
     $this->statement_rss1 = prepare(
@@ -294,7 +294,7 @@ class Calendrier {
 			extract(epoch from c.submit_timestamp) timestamp, u.username username
 			FROM " . $table_prefix . "events c, " . $table_prefix . "users u
 			WHERE c.id_submitter = u.id AND c.id_cal = ?
-			AND DATE_ADD(submit_timestamp, INTERVAL ? DAY) >= NOW()
+			AND c.submit_timestamp + ?::interval >= NOW()
       ORDER BY c.submit_timestamp DESC"
     );
     $this->statement_rss_next = prepare(
@@ -530,7 +530,7 @@ class Calendrier {
 	}
 
 	function & getLastEntries($minnumber = 10, $delay = 5) {
-		$res = query($this->statement_rss1, array($this->cal_nb, $delay))->fetchAll();
+		$res = query($this->statement_rss1, array($this->cal_nb, "$delay days"))->fetchAll();
 		if (count($res) >= $minnumber) {
 			return $res;
 		}

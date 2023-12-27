@@ -24,7 +24,7 @@ require_once('includes/calendrier.inc.php');
 require_once 'includes/auth.inc.php';
 require_once 'includes/calendar_auth.inc.php';
 
-// tiré d'un commentaire de http://fr.php.net/htmlentities
+// tirÃ© d'un commentaire de http://fr.php.net/htmlentities
 function xmlentities($string, $quote_style=ENT_QUOTES)
 {
 	static $trans;
@@ -58,12 +58,12 @@ function createMissingFieds(&$value, $key) {
 	$value['username'] = xmlentities(ucfirst(iconv("UTF-8", "ISO-8859-15", $value['username'])));
 }
 
-/* connexion à la db */
+/* connexion Ã  la db */
 $db = new PDO($dsn, null, null, array(
   PDO::ATTR_PERSISTENT => true
 ));
 
-/* instanciation des routines d'accès au calendrier */
+/* instanciation des routines d'accÃ¨s au calendrier */
 if (isset($_GET['cal'])) {
 	$calendrier = new Calendrier($db, $_GET['cal']);
 	if (!$calendrier->isActive()) {
@@ -86,17 +86,17 @@ if (isset($_GET['next'])) {
 		$entries = $calendrier->getNextEntries();
 	}
 } else {
-	$title = "Derniers concerts entrés";
+	$title = "Derniers concerts entrÃ©s";
 	$entries = $calendrier->getLastEntries();
 }
 
-/* time "à la" w3c */
+/* time "Ã  la" w3c */
 array_walk($entries, 'createMissingFieds');
 $more_recent_time = $entries[0]['time'];
 
 header('Content-Type: text/xml');
 
-echo "<?xml version='1.0' encoding='ISO-8859-15' ?>\n";
+echo "<?xml version='1.0' encoding='utf-8' ?>\n";
 ?>
 <rdf:RDF
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
