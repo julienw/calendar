@@ -140,6 +140,7 @@ class Event extends Calendar_Decorator {
 		$class ='add';
 		$action = 'addUser';
 
+    $users = '';
 		if (! empty($event['users'])) {
 			$users = implode(', ', $event['users']);
 			$users = ucwords($users);
