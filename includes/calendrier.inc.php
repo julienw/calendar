@@ -314,7 +314,7 @@ class Calendrier {
 			. $table_prefix . "users u2, " . $table_prefix . "events_users cu
 			WHERE jour >= NOW() AND u2.username = ?
 			AND u2.id = cu.id_user AND cu.id_event = c.id
-			AND cu.sure = 1
+			AND cu.sure = true
 			AND c.id_submitter = u.id
 			ORDER BY jour
       LIMIT ?"

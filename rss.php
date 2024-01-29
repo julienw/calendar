@@ -54,8 +54,8 @@ function createMissingFieds(&$value, $key) {
 	}
 	$value["url"] = "http://www.everlong.org/calendrier/?$cal" . strtr($value['jour'], '-', '/');
 	$jour = preg_replace('/^(\d+)-(\d+)-(\d+).*$/', '$3/$2', $value['jour']);
-	$value['event'] = xmlentities(iconv("UTF-8", "ISO-8859-15", $jour . ' ' . $value['event']));
-	$value['username'] = xmlentities(ucfirst(iconv("UTF-8", "ISO-8859-15", $value['username'])));
+	$value['event'] = xmlentities($jour . ' ' . $value['event']);
+	$value['username'] = xmlentities(ucfirst($value['username']));
 }
 
 /* connexion à la db */
