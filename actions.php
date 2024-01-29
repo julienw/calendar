@@ -47,7 +47,7 @@ function redirect() {
 	$myParameters[] = 'inputnew\d+';
 	$querystring = preg_replace('/(' . join('|', $myParameters) . ')(?:=[^&]*&(?:amp;)?)?/', '', $_SERVER['QUERY_STRING']);
 
-	$location = $site_url . $_SERVER['PATH_INFO'] . '?' . $querystring;
+	$location = $site_url . ($_SERVER['PATH_INFO'] ?? "") . '?' . $querystring;
 	
 	header('Location: ' . $location);
 	exit;
