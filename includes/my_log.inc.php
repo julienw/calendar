@@ -26,7 +26,7 @@
 class MyLog {
   var $db;
   var $statement;
-	var $loglevel = 6;
+	var $loglevel = 4;
 
 	function __construct(&$db, $ident) {
 		global $table_prefix;
